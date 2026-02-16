@@ -6,97 +6,67 @@
 
 using namespace std;
 
-int s[501][501];
-bool visited[501][501];
+int com[101][101];
+bool visited[101];
 
-int dx[4] = {-1,1,0,0};
-int dy[4] = {0,0,1,-1};
-//          좌 우 위 아래
 int main(){
 
   ios::sync_with_stdio(false);
   cin.tie(0);
 
 
-  // 1.아이디어 2.시간복잡도 3. 자료구조
 
-  //1926 
+  //2606
 
-  //1. 그래프를 탐색하다가 아직 방문하지 않은 1이 나올경우 그 1로 들어가서 마지막 1
-  //까지 흔적을 남기고 max_area 비교 그다음 그림 개수 ++ 
-  
-  //2. O(V+E)  : m*n + E(4*V) 그러면 5V  = 5*500*500      125 00 00 2초면 2억 가능
 
-  //3. 2차원배열 , queue
+  //1 아이디어 거쳐간 애들을 1 1 로 체크해서 for문돌려서 1인 애들만 count하려고 했으나 만약 순서가
+  //원하는 대로 안나오면 값이 달라질 수 있음 연결되어있는 것을 나타내면 bfs로 충분히 탐색하면서
+  //풀 수 있을 것 같은데. bfs dfs 둘다 가능하다
 
+  //2 시간복잡도 O(V+E) V는 100 E는 99 199 근데 감염안된 컴퓨터도 체크해야하니까 100 * 100 해도 
+  // 1억 안된다.
+
+  //3 자료구조 서로 연결 되어 있음을 확인하는 2차원배열o  그다음에 방문했는지 안했는지 o.
+  //queue자료구조
 
 
   int n,m;
+
   cin >> n >> m;
 
-  
-  int count = 0 ;
-  int max_area = 0;
+  for(int i = 0 ; i < m ; ++i){
+    int one , two;
 
-  for(int i = 1 ; i <= n ; ++i){
-    for(int j = 1 ;  j <= m  ; ++j){
-      cin >> s[i][j];
-    }
+    cin >> one >> two;
+
+    com[one][two] = 1; //연결되어있다
+    com[two][one] = 1; 
   }
 
+  queue<int> q;
 
+  q.push(1);
 
-  for(int i = 1 ; i <= n ; ++i){
-    for(int j = 1 ;  j <= m  ; ++j){
-      
-      //n이 세로 m이 가로
+  int count = 0 ;
+  while(!q.empty()){
+    int k = q.front();
 
-      if(s[i][j] && visited[i][j] == false){
-        queue<pair<int , int>> q;
+    //처음에 1을 꺼냈고
+    q.pop();
+    visited[k] = true;
 
-        visited[i][j] = true;
-        int k = 1;
-        q.push({i,j});
-
-        // 그 위치에서부터 탐색한다.
-
-        while(!q.empty()){
-          int y = q.front().first;
-          int x = q.front().second;
-
-          q.pop();
-          
-
-          for(int i = 0 ; i<4; ++i){
-            int ny = y+ dy[i];
-            int nx = x+ dx[i];
-
-            if(1<=nx && nx <= m && 1<=ny && ny<=n){
-
-              //좌표가 유효하다.
-              
-              if(s[ny][nx] && visited[ny][nx] == false){
-                //값이 1 방문 X
-
-                ++k;
-                visited[ny][nx] = true;
-                q.push({ny,nx});
-              }
-
-            }
-          }
-
-        }
-        
-        max_area =  max(max_area, k);
+    for(int i = 1; i<=n ; ++i){
+      if(com[k][i] && !visited[i]){
         count++;
+        visited[i] = true;
+        q.push(i);
+        
       }
     }
   }
 
 
-
-  cout << count << '\n' << max_area;
+  cout << count << '\n';
   
 
 
