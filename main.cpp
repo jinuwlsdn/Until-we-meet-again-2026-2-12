@@ -6,8 +6,10 @@
 
 using namespace std;
 
-int com[101][101];
-bool visited[101];
+const int MAX = 100000;
+
+int graph[MAX+1];
+bool visited[MAX+1];
 
 int main(){
 
@@ -15,58 +17,82 @@ int main(){
   cin.tie(0);
 
 
+  //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //2606
+  //1697 
 
+  //1. 이게 왜 bfs문제임? -> 탐색을 한다고 했을 때 선택지가 x-1 x+1 , 2*x
+  //그렇다면 첫번째 위치에서 나올 수 있는 가짓수가 3가지고 그래프로 연결해본다고 했을때  한 자식한테
+  //나오는 가짓수가 3개고 그러면 그렇게 각 정점을 돌아다니면서 위치가 동생 위치일 때 종료하면됨.
+  
 
-  //1 아이디어 거쳐간 애들을 1 1 로 체크해서 for문돌려서 1인 애들만 count하려고 했으나 만약 순서가
-  //원하는 대로 안나오면 값이 달라질 수 있음 연결되어있는 것을 나타내면 bfs로 충분히 탐색하면서
-  //풀 수 있을 것 같은데. bfs dfs 둘다 가능하다
+  //2. O(V+E) 만들어진 정점들은 최대 100000 간선들은 하나에 최대가 3이니까 3*100000 그래도 2초보단 작다
+  
 
-  //2 시간복잡도 O(V+E) V는 100 E는 99 199 근데 감염안된 컴퓨터도 체크해야하니까 100 * 100 해도 
-  // 1억 안된다.
+  //3. 일차원배열을 만들어서 방문했는지 안했는지 , bfs니까 queue FIFO 100000이니까 int로 잡아도 된다.
 
-  //3 자료구조 서로 연결 되어 있음을 확인하는 2차원배열o  그다음에 방문했는지 안했는지 o.
-  //queue자료구조
+  
+  int n,k;
 
-
-  int n,m;
-
-  cin >> n >> m;
-
-  for(int i = 0 ; i < m ; ++i){
-    int one , two;
-
-    cin >> one >> two;
-
-    com[one][two] = 1; //연결되어있다
-    com[two][one] = 1; 
-  }
+  cin >> n >> k;
 
   queue<int> q;
 
-  q.push(1);
 
-  int count = 0 ;
+  //graph 배열에서 각 배열에다가 초를 기입하면 된다. 그 후에 ++한 값으로 저장하면되니까.
+
+  q.push(n);
+
+
+  int seconds = 0;
+  visited[n] = true;
+
+  //이떄 q.empty()는 필요가있나?다 탐색하는데 없을 수가 없잖아.
   while(!q.empty()){
-    int k = q.front();
+    int next_x = q.front();
 
-    //처음에 1을 꺼냈고
     q.pop();
-    visited[k] = true;
 
-    for(int i = 1; i<=n ; ++i){
-      if(com[k][i] && !visited[i]){
-        count++;
-        visited[i] = true;
-        q.push(i);
-        
-      }
+    
+
+
+    //위치가 맞아야지
+    if(next_x == k){
+      seconds = graph[next_x];
+
+      //cout << next_x << '\n';
+
+      break;
     }
+    
+
+    //값이 맞고 방문을 X 
+    if(0<= next_x + 1 && next_x + 1 <= MAX  && !visited[next_x+1]){
+      q.push(next_x+1);
+      graph[next_x+1] = graph[next_x] + 1;
+      visited[next_x+1] = true;
+      
+    }
+    if(0<= next_x - 1 && next_x - 1 <= MAX  && !visited[next_x-1]){
+      q.push(next_x-1);
+      graph[next_x-1] = graph[next_x] + 1;
+      visited[next_x-1] = true;
+    }
+    if(0<= 2 * next_x && 2 * next_x  <= MAX  && !visited[2*next_x]){
+      q.push(2 * next_x);
+      graph[2 * next_x] = graph[next_x] + 1;
+      visited[2 * next_x] = true;
+    }
+
+    
   }
 
 
-  cout << count << '\n';
+  cout << seconds << '\n';
+
+
+
+
   
 
 
