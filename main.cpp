@@ -3,45 +3,40 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <cstring>
 
 
 
 
 using namespace std;
 
-const int MAX = 25;
-
-int graph[MAX+1][MAX+1];
+const int MAX = 50;
+int w,h;
+int land[MAX+1][MAX+1];
 bool visited[MAX+1][MAX+1];
-int n;
-int dx[4] = {1,0,-1,0};
-int dy[4] = {0,1,0,-1};
-int each = 0 ;
+int dx[8] = {1,1,0,-1,-1,-1,0,1};
+int dy[8] = {0,1,1,1,0,-1,-1,-1};
 
 void dfs(int y, int x){
 
-  //bfs랑 다르게 한곳만 파니까 처음부터 true로 적어도 된다.
-  visited[y][x] = true;
-  each++;
+  
+  for(int i = 0 ; i < 8; ++i ){
+    int ny = y+dy[i];
+    int nx = x+dx[i];
 
-  for(int i = 0 ; i < 4 ; ++i){
-    int ny = y + dy[i];
-    int nx = x + dx[i];
+    //섬이고 방문 X
 
-    //좌표만들고 
+    
 
-    if( 0 <= ny && ny<n && 0<= nx && nx < n && !visited[ny][nx]){
-      //방문을 안했음
-      if(graph[ny][nx] == 1 && !visited[ny][nx]){
+    if(0<= ny && ny < h && 0<=nx && nx<w ){
+      //범위 안에 있으면
+      if(land[ny][nx] && !visited[ny][nx]){
+        visited[ny][nx] = true;
         dfs(ny,nx);
       }
-
     }
-    
-    
   }
 }
-
 
 
 int main(){
@@ -52,68 +47,67 @@ int main(){
 
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //2667
-
-  //1. DFS를 사용하여 푸는데 이때 사용하는건 재귀함수이다. 이차원배열을 탐색하다가
-  //1의 값이 나오면 그 지점부터 DFS탐색을 실시한다. 
-
-  //2. O(V+E) 이다 V는 n^2 e를 계산할 때에 정점에서 뻗어나갈 수 있는 e가 최대 4 이므로 4v
-  //총 5v 5 * n^2 n의 최댓값은 25 625는 2억보다 작다. 가능
-  
-  //3. 자료구조 이차원배열 visited 
-
-  //4. dfs 호출 까먹지말고 visited true  01001010 이렇게 주어지면 string으로 받아야된다.
-  //그래프로 탐색해야하니까 dx dy를 만들어준다.
+  //1. 2667번 문제랑 비슷한데 대각선까지도 섬으로 연결하는 부분이 추가됐네 그러면 이동할 수 있는 가짓수가 8
 
 
+  //2. 시간복잡도 똑같이 O(V+E) = v에다가 이동할수있는 간선이 8개니까 9v  v는 n^2 2500은 1억보다 작다.
+
+  //3. 이차원배열 및 bool visited 2차원배열에서 탐색이니까 4가지 방향 생성해야한다.
   
 
-  cin >> n;
+  //4 이차원배열의 값은 들어올때마다 초기화를 해줬는데 visited의 값은 초기화를 해주지 않았다.
+  //memset 사용
 
-  string line;
 
-
-  vector<int> v;
-
+  //4963
 
   
+  
 
-  for(int i = 0 ; i < n ; ++i){
-    cin >> line;
+  //너비가 w 높이가 h
+  while(1){
 
-    for(int j = 0 ; j < line.length(); ++j){
-      graph[i][j] = line[j] - '0';
+
+    memset(visited, false, sizeof(visited));
+    memset(land , 0 , sizeof(land));
+
+    
+
+    int count = 0;
+    cin >> w >> h;
+    if(w == 0 && h == 0){
+      break;
     }
-  }
 
-  for(int i = 0 ; i< n ; ++i){
-    for(int j = 0 ; j<n;  ++j){
-      if(graph[i][j] && !visited[i][j]){
-        //1이고 방문하지않음 
-
-        // i 는 y  j는 x
-
-        each = 0;
-        dfs(i,j);
-
-        v.push_back(each);
+    for(int i = 0; i<h; ++i){
+      for(int j = 0 ; j<w ;++j){
         
+        cin >> land[i][j];
+      }
+    }
 
+    
+    for(int i = 0; i<h; ++i){
+      for(int j = 0 ; j<w ;++j){
+        if(land[i][j] && !visited[i][j]){
+          //섬
+
+          visited[i][j] = true;
+          dfs(i,j);
+          count++;
+
+        }
 
 
       }
+
+      
     }
+
+
+    cout << count << '\n';
   }
 
-
-  sort(v.begin(), v.end());
-
-  cout << v.size() << '\n';
-
-  for(int item : v){
-    cout << item << '\n';
-  }
-  
 
   return 0;
 }
