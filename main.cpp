@@ -2,12 +2,12 @@
 #include <queue>
 #include <iostream>
 #include <algorithm>
+#include <deque>
 
 
 using namespace std;
 
 const int MAX = 100000;
-
 int graph[MAX+1];
 bool visited[MAX+1];
 
@@ -19,83 +19,64 @@ int main(){
 
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1697 
+  //13549
 
-  //1. 이게 왜 bfs문제임? -> 탐색을 한다고 했을 때 선택지가 x-1 x+1 , 2*x
-  //그렇다면 첫번째 위치에서 나올 수 있는 가짓수가 3가지고 그래프로 연결해본다고 했을때  한 자식한테
-  //나오는 가짓수가 3개고 그러면 그렇게 각 정점을 돌아다니면서 위치가 동생 위치일 때 종료하면됨.
-  
+  //1. 순간이동하는데 시간은 필요없긴하지 음 기본적인 틀은 똑같은데 0초후니까 순간이동 하는경우엔
+  //++을 하지 않으면 될것같다.
+  //우선순위 큐? / K에 먼저 도착한 경우의 수가 반드시 seconds가 최소인 것은 아님.
+  // ex) N이 1 K가 2라고 했을때 x+1 , 2*x 둘 다 2에 도착하지만 x+1은 1이고 2*x는 0의 값을 가진다.
 
-  //2. O(V+E) 만들어진 정점들은 최대 100000 간선들은 하나에 최대가 3이니까 3*100000 그래도 2초보단 작다
-  
+  //2 시간복잡도 숨바꼭질 처음문제처럼 나오겠다 O(V+E) V는 십만 E는 간선이 3개니까 삼십만 총 사십만
+  // OK
+  //3. int 배열 , bool visited , queue 자료구조 
 
-  //3. 일차원배열을 만들어서 방문했는지 안했는지 , bfs니까 queue FIFO 100000이니까 int로 잡아도 된다.
+  //4 visited 잘 체크하기.
 
-  
   int n,k;
 
   cin >> n >> k;
 
-  queue<int> q;
-
-
-  //graph 배열에서 각 배열에다가 초를 기입하면 된다. 그 후에 ++한 값으로 저장하면되니까.
-
-  q.push(n);
-
-
   int seconds = 0;
-  visited[n] = true;
 
-  //이떄 q.empty()는 필요가있나?다 탐색하는데 없을 수가 없잖아.
-  while(!q.empty()){
-    int next_x = q.front();
+  deque<int> dq;
 
-    q.pop();
+  dq.push_back(n); // 초기 위치를 넣어준다.
 
-    
+  visited[n] = true; // 초기 위치에 다시 오지않는다.
 
+  while(!dq.empty()){
+    int x = dq.front();
 
-    //위치가 맞아야지
-    if(next_x == k){
-      seconds = graph[next_x];
+    dq.pop_front(); // pop을 할때 무엇을 할지 몰라서
 
-      //cout << next_x << '\n';
-
+    if(x==k){
+      seconds = graph[x];
       break;
     }
-    
 
-    //값이 맞고 방문을 X 
-    if(0<= next_x + 1 && next_x + 1 <= MAX  && !visited[next_x+1]){
-      q.push(next_x+1);
-      graph[next_x+1] = graph[next_x] + 1;
-      visited[next_x+1] = true;
-      
-    }
-    if(0<= next_x - 1 && next_x - 1 <= MAX  && !visited[next_x-1]){
-      q.push(next_x-1);
-      graph[next_x-1] = graph[next_x] + 1;
-      visited[next_x-1] = true;
-    }
-    if(0<= 2 * next_x && 2 * next_x  <= MAX  && !visited[2*next_x]){
-      q.push(2 * next_x);
-      graph[2 * next_x] = graph[next_x] + 1;
-      visited[2 * next_x] = true;
+    for(int next_pos : {2*x, x-1, x+1}){
+      if(0 <= next_pos && next_pos <= MAX && !visited[next_pos]){
+        if(next_pos == 2*x){
+          // 가중치가 
+          visited[next_pos] = true;
+          dq.push_front(next_pos);
+          graph[next_pos] = graph[x];
+        }
+        else{
+
+          // x+1, x-1는 뒤에 넣는다.
+          visited[next_pos] = true;
+          dq.push_back(next_pos);
+          graph[next_pos] = graph[x] + 1;
+        }
+
+      }
     }
 
-    
   }
 
-
-  cout << seconds << '\n';
-
-
-
-
   
-
-
+  cout << seconds << '\n';
 
 
   return 0;
