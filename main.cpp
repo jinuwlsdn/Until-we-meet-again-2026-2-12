@@ -2,14 +2,47 @@
 #include <queue>
 #include <iostream>
 #include <algorithm>
-#include <deque>
+#include <vector>
+
+
 
 
 using namespace std;
 
-const int MAX = 100000;
-int graph[MAX+1];
-bool visited[MAX+1];
+const int MAX = 25;
+
+int graph[MAX+1][MAX+1];
+bool visited[MAX+1][MAX+1];
+int n;
+int dx[4] = {1,0,-1,0};
+int dy[4] = {0,1,0,-1};
+int each = 0 ;
+
+void dfs(int y, int x){
+
+  //bfs랑 다르게 한곳만 파니까 처음부터 true로 적어도 된다.
+  visited[y][x] = true;
+  each++;
+
+  for(int i = 0 ; i < 4 ; ++i){
+    int ny = y + dy[i];
+    int nx = x + dx[i];
+
+    //좌표만들고 
+
+    if( 0 <= ny && ny<n && 0<= nx && nx < n && !visited[ny][nx]){
+      //방문을 안했음
+      if(graph[ny][nx] == 1 && !visited[ny][nx]){
+        dfs(ny,nx);
+      }
+
+    }
+    
+    
+  }
+}
+
+
 
 int main(){
 
@@ -19,65 +52,68 @@ int main(){
 
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //13549
+  //2667
 
-  //1. 순간이동하는데 시간은 필요없긴하지 음 기본적인 틀은 똑같은데 0초후니까 순간이동 하는경우엔
-  //++을 하지 않으면 될것같다.
-  //우선순위 큐? / K에 먼저 도착한 경우의 수가 반드시 seconds가 최소인 것은 아님.
-  // ex) N이 1 K가 2라고 했을때 x+1 , 2*x 둘 다 2에 도착하지만 x+1은 1이고 2*x는 0의 값을 가진다.
+  //1. DFS를 사용하여 푸는데 이때 사용하는건 재귀함수이다. 이차원배열을 탐색하다가
+  //1의 값이 나오면 그 지점부터 DFS탐색을 실시한다. 
 
-  //2 시간복잡도 숨바꼭질 처음문제처럼 나오겠다 O(V+E) V는 십만 E는 간선이 3개니까 삼십만 총 사십만
-  // OK
-  //3. int 배열 , bool visited , queue 자료구조 
+  //2. O(V+E) 이다 V는 n^2 e를 계산할 때에 정점에서 뻗어나갈 수 있는 e가 최대 4 이므로 4v
+  //총 5v 5 * n^2 n의 최댓값은 25 625는 2억보다 작다. 가능
+  
+  //3. 자료구조 이차원배열 visited 
 
-  //4 visited 잘 체크하기.
+  //4. dfs 호출 까먹지말고 visited true  01001010 이렇게 주어지면 string으로 받아야된다.
+  //그래프로 탐색해야하니까 dx dy를 만들어준다.
 
-  int n,k;
 
-  cin >> n >> k;
+  
 
-  int seconds = 0;
+  cin >> n;
 
-  deque<int> dq;
+  string line;
 
-  dq.push_back(n); // 초기 위치를 넣어준다.
 
-  visited[n] = true; // 초기 위치에 다시 오지않는다.
+  vector<int> v;
 
-  while(!dq.empty()){
-    int x = dq.front();
 
-    dq.pop_front(); // pop을 할때 무엇을 할지 몰라서
+  
 
-    if(x==k){
-      seconds = graph[x];
-      break;
+  for(int i = 0 ; i < n ; ++i){
+    cin >> line;
+
+    for(int j = 0 ; j < line.length(); ++j){
+      graph[i][j] = line[j] - '0';
     }
+  }
 
-    for(int next_pos : {2*x, x-1, x+1}){
-      if(0 <= next_pos && next_pos <= MAX && !visited[next_pos]){
-        if(next_pos == 2*x){
-          // 가중치가 
-          visited[next_pos] = true;
-          dq.push_front(next_pos);
-          graph[next_pos] = graph[x];
-        }
-        else{
+  for(int i = 0 ; i< n ; ++i){
+    for(int j = 0 ; j<n;  ++j){
+      if(graph[i][j] && !visited[i][j]){
+        //1이고 방문하지않음 
 
-          // x+1, x-1는 뒤에 넣는다.
-          visited[next_pos] = true;
-          dq.push_back(next_pos);
-          graph[next_pos] = graph[x] + 1;
-        }
+        // i 는 y  j는 x
+
+        each = 0;
+        dfs(i,j);
+
+        v.push_back(each);
+        
+
+
 
       }
     }
-
   }
 
-  
-  cout << seconds << '\n';
 
+  sort(v.begin(), v.end());
+
+  cout << v.size() << '\n';
+
+  for(int item : v){
+    cout << item << '\n';
+  }
+  
 
   return 0;
 }
