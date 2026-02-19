@@ -12,14 +12,24 @@ using namespace std;
 
 const int MAX = 1e5;
 
-int graph[MAX+1][MAX+1];
-bool visited[MAX+1][MAX+1];
+vector<int> graph[MAX+1];
+bool visited[MAX+1];
+int parents[MAX+1];
+int n;
 
 
 void dfs(int k){
   //k를 넣고 k의 부모를 찾아올라가서 반환하면 된다.
 
+  
+  visited[k] = true;
 
+  for(int next : graph[k]){
+    if(!visited[next]){
+      parents[next] = k;
+      dfs(next);
+    }
+  }
 
 
 }
@@ -46,21 +56,25 @@ int main(){
   //3. 관계를 나타낼 때에는 이차원배열로 표현 , bool visited <- 1차원배열.
   
 
-  int n;
+  
 
   cin >> n;
 
-  for(int i = 2 ; i <= n ; ++i){
+  for(int i = 0 ; i < n-1 ; ++i){
 
     //여기서 2번노드부터니까 i는 1부터시작.
 
     int p,q;
     cin >> p >> q;
 
-    graph[p][q] = 1;
-    graph[q][p] = 1;
+    graph[p].push_back(q);
+    graph[q].push_back(p);
+  }
 
-    //이어져있다 둘이
+  dfs(1);
+
+  for(int i = 2 ; i <=n; ++i){
+    cout << parents[i] << '\n';
   }
 
   
