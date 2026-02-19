@@ -10,29 +10,48 @@
 
 using namespace std;
 
-const int MAX = 1e5;
+const int MAX = 100;
 
-vector<int> graph[MAX+1];
-bool visited[MAX+1];
-int parents[MAX+1];
 int n;
+char painting[MAX+1][MAX+1];
+bool visited[MAX+1][MAX+1];
+
+int result[2];
+
+int dx[4] = {1,0,-1,0};
+int dy[4] = {0,1,0,-1};
 
 
-void dfs(int k){
-  //k를 넣고 k의 부모를 찾아올라가서 반환하면 된다.
+void dfs1(int y, int x, char color){
 
-  
-  visited[k] = true;
+  visited[y][x] = true;
 
-  for(int next : graph[k]){
-    if(!visited[next]){
-      parents[next] = k;
-      dfs(next);
+  //적록색약이 아닌 경우 
+
+  for(int i = 0 ;  i<4 ; ++i){
+
+    int ny = y + dy[i];
+    int nx = x + dx[i];
+
+    if(0<= ny  && ny < n && 0 <= nx && nx < n){
+      //범위 안에 들어가고 
+
+      if(painting[ny][nx] == color && !visited[ny][nx]){
+        //색깔이 같고 방문하지않았으면 
+
+        
+        dfs1(ny,nx,color);
+      }
     }
+
   }
 
-
 }
+
+
+
+
+
 
 
 
@@ -43,41 +62,94 @@ int main(){
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  //11725
+  //10026
 
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
-  //1. 이차원 배열로 서로 연결해서 부모를 찾는 방법으로 접근해야할 것 같다.
-  //그리고 당연히 방문한 노드는 다시 방문하지 않는다. 그리고 2번노드 부터 출력한다 
-  //탐색하려고 하는 대상 노드를 p라고 했을 때 graph[p][k] == 1 (k는 1부터 n) 
-  //result[k] = p , dfs(k) 끝나면 for문으로 1부터 n까지 출력.
 
-  //2. 시간복잡도 O(V+E)  트리니까 정점은 N , E는 2*N 총 3*N 1억보다 작다.
+  //1 RGB로 입력을 받으면 적록색약인 사람이 봤을때, 아닌 사람이 봤을때 차이만 구별해서
+  //코드를 완성하면 될 것 같다. 그러면 dfs함수를 2개를 작성해서 만들고 각각 값을 result[0]
+  //result[1]에 저장해서 출력하면 된다
 
-  //3. 관계를 나타낼 때에는 이차원배열로 표현 , bool visited <- 1차원배열.
+  //2. 시간복잡도 O(V+E) n이 100이므로 n^2의 값이 1초보다 작다.
+
+  //3. 재귀함수와 n이 100이므로 이차원배열을 사용해도 될 것 같다. 
+
+  //4. visited체크 
+
+
   
-
-  
-
   cin >> n;
 
-  for(int i = 0 ; i < n-1 ; ++i){
 
-    //여기서 2번노드부터니까 i는 1부터시작.
+  for(int i = 0 ; i < n ; ++i){
+    string line;
+    cin >> line;
 
-    int p,q;
-    cin >> p >> q;
-
-    graph[p].push_back(q);
-    graph[q].push_back(p);
+    for(int j = 0 ; j<line.length(); ++j){
+      painting[i][j] = line[j];
+    }
   }
 
-  dfs(1);
 
-  for(int i = 2 ; i <=n; ++i){
-    cout << parents[i] << '\n';
+
+  //첫번째
+  
+
+  for(int i = 0 ; i < n ;++i){
+    for(int j = 0 ; j<n; ++j){
+
+      if(!visited[i][j]){
+        result[0]++;
+
+        //방문하지않았으면 
+        dfs1(i,j,painting[i][j]);
+      }
+
+
+    }
+  }
+
+
+  //조건에 "색상의 차이를 거의 느끼지 못하는 경우도 같은 색상이라 한다" 
+  //라는 말이 있으니까 G를 R로 바꾸고 dfs1을 쓰면 될 것 같다.
+
+  for(int i = 0 ; i < n ;++i){
+    for(int j = 0 ; j<n; ++j){
+
+      if(painting[i][j] == 'G'){
+        painting[i][j] = 'R';
+      }
+
+    }
   }
 
   
+
+
+  
+
+  memset(visited, false, sizeof(visited));
+  //두번째
+
+   for(int i = 0 ; i < n ;++i){
+    for(int j = 0 ; j<n; ++j){
+
+      if(!visited[i][j]){
+        result[1]++;
+
+        //방문하지않았으면 
+        dfs1(i,j,painting[i][j]);
+      }
+
+
+    }
+  }
+  
+  
+
+
+  cout << result[0] << " " << result[1] << '\n';
+
 
   return 0;
 }
