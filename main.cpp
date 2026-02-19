@@ -11,7 +11,7 @@ int arr[9];
 bool visited[9];
 int n,m;
 
-void recurse(int num){
+void recurse(int k, int num){
 
   if(num == m){
     for(int i = 0 ; i < m; ++i){
@@ -21,15 +21,18 @@ void recurse(int num){
     return;
   }
 
-  for(int i = 1 ; i <= n ; ++i){
+  for(int i = k ; i <= n ; ++i){
 
     if(!visited[i]){
       //방문 X
       arr[num] = i;
-      visited[i] = true;
-      recurse(num+1);
+      //visited[i] = true;
 
-      visited[i] =  false;
+      //자기보다 큰 수를 인자로 넘겨주면 그 전의 recurse에선 그 큰 수 보다 작은
+      //값을 쓴 적이 없다.
+      recurse(i+1,num+1);
+
+      //visited[i] =  false;
     }
   }
 }
@@ -39,23 +42,24 @@ int main(){
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  //15649
+  //15650
 
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1 재귀함수를 사용해서 문제를 푼다
 
-  //2 시간복잡도 중복을 허용하지 않기 때문에 O(N!) n은 8이므로 8! 10!보다 작으면 OK
+  //1 recurse함수에서 인자값을 추가로 전달 해야할 것 같다. 오름차순이니까 for문을
+  //돌릴때 전 recurse함수에서 썼던 값보다 높게 설정해야 함. 
+  
 
-  //3 1차원배열 사용
+  //2 중복없이니까 15649처럼 N!인데 N이 8이므로 가능
 
-  //4 visited 잘 체크하기
+  //3 1차원배열 필요.
 
   
 
   cin >> n >> m;
 
-  recurse(0);
+  recurse(1,0);
 
  
   
