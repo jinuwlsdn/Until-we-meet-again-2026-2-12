@@ -7,108 +7,94 @@
 
 using namespace std;
 
+const int MAX = 20;
 
-int ope[4];
-int min_value = 10e8;
-int max_value = -10e8;
-
-int num[11];
-
-int n;
-
-void recurse(int depth, int result){
+int soccer[MAX+1][MAX+1];
+bool visited[MAX+1];
+int n; 
+int min_gap = 1e9;
 
 
-  //인자 2개  전의 계산한 값과 depth 
+void dfs(int depth, int idx){
 
-  if(depth == n-1){
-    max_value = max(max_value , result);
-    min_value = min(min_value , result);
+  if(depth == n/2){
+    
+    int s_team =0;
+    int l_team =0;
+
+    for(int i = 1;  i<=n ; ++i){
+      for(int j = 1; j <=n ; ++j){
+
+        if(visited[i] && visited[j]){
+          //둘 다 같은 팀 true를 s팀이라고 하자
+          s_team += soccer[i][j];
+        }
+        else if(!visited[i] && !visited[j]){
+          //둘 다 같은 팀 false를 l팀이라고 하자
+          l_team += soccer[i][j];
+        }
+
+      }
+    }
+
+    int min_value = abs(s_team - l_team);
+    min_gap = min(min_gap, min_value);
     return;
   }
 
-  for(int i = 0 ;  i < 4 ; ++i){
 
-    //+ - x / 
-    if(ope[i] > 0){
-      
-      if(i == 0){
 
-        //덧셈 
-        //전의 값과 더한다
-        ope[i]--;
-        int k = (result + num[depth+1]);
-        recurse(depth+1, k);
-        ope[i]++;
-      }
-      else if(i == 1){
-        ope[i]--;
-        int k = (result - num[depth+1]);
-        recurse(depth+1, k);
-        ope[i]++;
-      }
-      else if(i == 2){
-        ope[i]--;
-        int k = (result * num[depth+1]);
-        recurse(depth+1, k);
-        ope[i]++;
-      }
-      else if(i == 3){
-        ope[i]--;
-        int k = (result / num[depth+1]);
-        recurse(depth+1, k);
-        ope[i]++;
-      }
+  for(int i = idx  ; i <= n; ++i){
+
+    if(!visited[i]){
+      //방문 X 
+      visited[i] = true;
+      dfs(depth+1, i+1);
+      visited[i] = false;
     }
-    
-
   }
-
-
-
 }
+
 
 int main(){
 
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  //14888
+  //14889
 
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1. 백트래킹을 통해서 만들어진 식을 구하고 그 식에서 값을 계산해서 max, min 값을 비교하면 될 것 같다.
-  //식의 결과를 R이라 했을 때 -10억 <= R <= 10억 . 어떤 경우에서도 이 범위를 벗어나지 않는다.
-  //또한 N의 최댓값이 그렇게 크지 않아서 백트래킹 문제로 생각할 수 있다.
+  //1. true , false로 팀 두개를 만든 다음에 depth ==  n/2이면 그 때 true false 값을 통해서
+  //팀의 능력치를 계산한다.
 
-  //2. 중복을 허용하지 않기 때문에 O(N!) N의 최댓값이 11이기 때문에 충분히 가능하다.
+  //2. ..? N이 20이고 만드는 팀의 구성원은 N/2 최대가 10이니까 중복을 허용 X O(N!) N이 10이므로 가능
 
-  //3. 1차원배열 
+  //3. 값을 저장할 이차원배열 , 또한 중복을 허용하지 않으므로 bool 1차원배열
 
-  //4. 
+  //4. dfs의 종료조건을 설정해야한다.
 
 
   
-
   cin >> n;
 
-  for(int i =0 ; i  < n ; ++i){
-    cin >> num[i];
+
+  //i가 세로 j가 가로
+
+  for(int i = 1 ; i <= n ;  ++i){
+    for(int j = 1 ; j <= n ;  ++j){
+      cin >> soccer[i][j];
+    }
   }
 
-  for(int i =0 ;  i < 4; ++i){
-    cin >> ope[i];
-  }
 
-  recurse(0, num[0]);
+  dfs(0,1);
 
+  cout << min_gap << '\n';
 
-
-
-  cout << max_value << '\n' << min_value ;
- 
   
 
+  
  
   
   return 0;
