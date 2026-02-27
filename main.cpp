@@ -9,23 +9,27 @@
 using namespace std;
 
 
+
+int n,m,r;
 int result[100001];
 vector<int> v[100001];
 bool visited[100001];
-int cnt =0;
-int n,m,r;
 
-void dfs(int curr){
- 
+
+void dfs(int depth, int curr){
+
   visited[curr] = true;
-  result[curr] = ++cnt;
+  result[curr] = depth;
+
 
   for(int next : v[curr]){
     if(!visited[next]){
-      dfs(next);
+      dfs(depth+1 , next);
     }
   }
-  
+
+
+
 }
 
 int main(){
@@ -33,45 +37,42 @@ int main(){
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  //24479
+  //24481
+  //24444
 
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1. 주어진 방문 순서 데이터 및 함수 구조로 dfs를 사용해 풀면 된다. 
-  //이때 중요한건 오름차순
+  //1. 전역 변수로 몇번째 방문했는지 기록하는 것이 아닌 dfs의 매개변수로 depth값을 준다.
+  // 만약 주어진 예제 입력 1에서 5와 1이 연결되어있었다면 5는 1로 출력이 될것이다.
 
-  //2. 시간복잡도 O(V+E) V는 100000 간선의수는 200 000 하지만
-  //이때 Vector로 접근해야한다.
+  //2. 시간복잡도 O(V+E) : ?
 
-  //3 vector , bool visited
-  
-  //4. visited 수행 잘 하기. 시작 정점에서 방문할 수 없는 경우는 0을 출력 
-  //숫자에 순서를 기입하기. 시작 정점의 방문순서는 1.
+  //3. vector , bool visited
 
-
-  
 
   cin >> n >> m >> r;
 
-  for(int i = 0 ; i < m; ++i){
-    int p , q;
+  memset(result, -1, sizeof(result));
+
+  //fill_n(result, 100001, -1);
+  for(int i = 0; i < m ; ++i){
+    int p,q;
     cin >> p >> q;
 
     v[p].push_back(q);
     v[q].push_back(p);
-
   }
 
-  for(int i =1 ; i<=n ; ++i){
+  for(int i = 1 ; i <=n ;++i){
     sort(v[i].begin(), v[i].end());
   }
-  
 
-  dfs(r);
+  dfs(0,r);
 
-  for(int i = 1; i<=n ;++i){
-    cout << result[i] <<'\n';
+  for(int i = 1; i <=n ;++i){
+    cout << result[i] << '\n';
   }
-  
+
+ 
   return 0;
 }
