@@ -10,69 +10,67 @@ using namespace std;
 
 
 
-int n,m,r;
-int result[100001];
-vector<int> v[100001];
-bool visited[100001];
-
-
-void dfs(int depth, int curr){
-
-  visited[curr] = true;
-  result[curr] = depth;
-
-
-  for(int next : v[curr]){
-    if(!visited[next]){
-      dfs(depth+1 , next);
-    }
-  }
-
-
-
-}
-
 int main(){
 
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  //24481
-  //24444
+  
+  //14719
 
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1. 전역 변수로 몇번째 방문했는지 기록하는 것이 아닌 dfs의 매개변수로 depth값을 준다.
-  // 만약 주어진 예제 입력 1에서 5와 1이 연결되어있었다면 5는 1로 출력이 될것이다.
 
-  //2. 시간복잡도 O(V+E) : ?
+  //1. 이차원배열을 통해서 만약 블럭이 1이라면 그 세로선을 통해 가로로 탐색하면서
+  //다시 1이 되는 블럭을 찾고 그 블럭까지의 거리를 cnt에 추가한다 그리고 탐색한 그 블럭들은
+  //다시 중첩이 되면 안되기 때문에 1의 값을 다시 넣어준다.
 
-  //3. vector , bool visited
+  //2. n^2 모든 블럭들을 다 순회하고 그 블럭중에서 다시 가로로 탐색한다고 가정했을때 n번 더곱한다
+  //n^3
+
+  //3 이차원배열
 
 
-  cin >> n >> m >> r;
 
-  memset(result, -1, sizeof(result));
+  int h,w;
 
-  //fill_n(result, 100001, -1);
-  for(int i = 0; i < m ; ++i){
-    int p,q;
-    cin >> p >> q;
+  cin >> h>>w;
 
-    v[p].push_back(q);
-    v[q].push_back(p);
+  int cnt=0;
+
+  vector<int> height(w);
+
+  for(int i = 0 ; i < w ; ++i){
+    cin >> height[i];
   }
 
-  for(int i = 1 ; i <=n ;++i){
-    sort(v[i].begin(), v[i].end());
+
+  for(int i = 1; i<w-1; ++i){
+
+    int left_h =0;
+    int right_h =0;
+
+    for(int j = 0 ; j<i; ++j){
+      left_h = max(left_h, height[j]);
+    }
+    for(int j = i; j<w; ++j){
+      right_h = max(right_h, height[j]);
+    }
+
+    int min_h =0;
+
+    min_h = min(left_h, right_h);
+
+    if(min_h > height[i]){
+      cnt += (min_h - height[i]);
+    }
+
   }
+  
+  cout << cnt << '\n';
 
-  dfs(0,r);
 
-  for(int i = 1; i <=n ;++i){
-    cout << result[i] << '\n';
-  }
 
- 
+  
   return 0;
 }
