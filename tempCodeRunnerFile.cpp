@@ -5,72 +5,81 @@
 #include <vector>
 #include <cstring>
 #include <set>
+#include <math.h>
 
 using namespace std;
-
-
-int result[100001];
-vector<int> v[100001];
-bool visited[100001];
-int n,m,r;
-
-void dfs(int depth, int first){
-  //if(depth == n+1) return;
-
-  //처음에 시작 정점 r
-
-  sort(v[first].begin(), v[first].end());
-
-  for(int item : v[first]){
-    if(!visited[item]){
-      //방문 X 
-      visited[item] = true;
-      result[item] = depth+1;
-      dfs(depth+1 , item);
-    }
-  }
-  
-}
 
 int main(){
 
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  //24479
-
+  
+  //2230
+  //2473
+  //16234
+  
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1. 주어진 방문 순서 데이터 및 함수 구조로 dfs를 사용해 풀면 된다. 
-  //이때 중요한건 오름차순
+  //1. ?? ㅇㄴ 난감하네
 
-  //2. 시간복잡도 O(V+E) V는 100000 간선의수는 200 000 하지만
-  //이때 Vector로 접근해야한다.
+  //2. ???
 
-  //3 vector , bool visited
-  
-  //4. visited 수행 잘 하기. 시작 정점에서 방문할 수 없는 경우는 0을 출력 
-  //숫자에 순서를 기입하기. 시작 정점의 방문순서는 1.
+  int n,m;
 
+  cin >> n >> m;
 
-  
-
-  cin >> n >> m >> r;
-
-  for(int i = 0 ; i < m; ++i){
-    int p , q;
-    cin >> p >> q;
-
-    v[p].push_back(q);
+  //같은 수를 선택하라고 나올 수 있음 그땐 차이가 0일텐데 만약 m의 값이 0으로 주어졌다면
+  //그땐 어떤 수열을 받아도 N이 1보다 크기 때문에 당연히 0이 가장 작은 갭이다.
+  if(m == 0){
+    cout << 0 << '\n';
+    return 0;
   }
-  
-  result[r] = 1;
-  visited[r] = true;
-  dfs(1,r);
 
-  for(int i = 1; i<=n ;++i){
-    cout << result[i] <<'\n';
+  vector<int> v(n);
+
+  for(int i = 0;  i < n ; ++i){
+    cin >> v[i];
   }
+
+  sort(v.begin(), v.end());
+
+  int start = 0;
+  int end = 0;
+
+  int gap = 0;
+  int min_len = 2e9 + 1;
+
+  while(end < n){
+
+    
+    gap = abs(v[start] - v[end]);
+
+    if(gap >= m){
+      if(gap == m){
+        min_len = gap;
+        break;
+      }
+
+
+      min_len = min(min_len, gap);
+      start++;
+    }
+    else if(gap < m){
+      end++;
+    }
+    
+
+
+
+  }
+
+
+
+  cout << min_len << '\n';
   
+
+
+
   return 0;
 }

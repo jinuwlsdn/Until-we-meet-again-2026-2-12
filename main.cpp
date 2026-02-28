@@ -9,86 +9,77 @@
 
 using namespace std;
 
-const int MAX = 4000000;
-
 int main(){
 
   ios::sync_with_stdio(false);
   cin.tie(0);
 
   
-  //1644
-
+  //2230
+  //2473
+  //16234
+  
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
+  //1. ?? ㅇㄴ 난감하네
 
+  //2. ???
 
-  //1 체를 써서 소수만 쓰고 그 다음에 연속된 소수의 합으로 나타내야하는데 어떻게 하면
-  //연속되게 할 수 있을까..
+  int n,m;
 
+  cin >> n >> m;
 
-  //2 O(N)만 돈다고 하면 4000000
-
-  //3 백만 바이트가 1mb 16mb 
-
-  //4 index값 조정 
-
-  int n;
-
-  cin >> n;
-
-  vector<bool> isprime(MAX+1, true);
-  vector<int> prime_num(283146+1);
-
-  //0과 1은 소수가 아니다.
-  isprime[0] = isprime[1] = false;
-
-  int idx =0;
-
-  for(int i = 2; i <= sqrt(MAX); ++i){
-    if(isprime[i]){
-
-      for(int j = i*i ; j <= MAX ; j+=i){
-        isprime[j] = false;
-      }
-    }
+  //같은 수를 선택하라고 나올 수 있음 그땐 차이가 0일텐데 만약 m의 값이 0으로 주어졌다면
+  //그땐 어떤 수열을 받아도 N이 1보다 크기 때문에 당연히 0이 가장 작은 갭이다.
+  if(m == 0){
+    cout << 0 << '\n';
+    return 0;
   }
 
-  for(int i = 2; i <= MAX ; ++i){
-    if(isprime[i]) prime_num[idx++] = i;
+  vector<int> v(n);
+
+  for(int i = 0;  i < n ; ++i){
+    cin >> v[i];
   }
 
-  
-  int cnt = 0;
+  sort(v.begin(), v.end());
 
-  int start =0;
-  
-  int sum = 0;
- 
+  int start = 0;
   int end = 0;
 
-  int prime_count = idx;
+  int gap = 0;
+  int min_len = 2e9 + 1;
 
-  while(true){
-    if(sum >= n){
-      if(sum == n) cnt++;
-      sum -= prime_num[start++];
+  while(end < n){
+
+    
+    gap = abs(v[start] - v[end]);
+
+    if(gap >= m){
+      if(gap == m){
+        min_len = gap;
+        break;
+      }
+
+
+      min_len = min(min_len, gap);
+      start++;
     }
-    else if(end == prime_count){
-      break;
+    else if(gap < m){
+      end++;
     }
-    else{
-      //합이 n보다 작다
-      sum += prime_num[end++];
-    }
+    
+
+
 
   }
 
 
- 
 
-  cout << cnt << '\n';
-
+  cout << min_len << '\n';
   
+
+
+
   return 0;
 }
