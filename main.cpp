@@ -15,60 +15,61 @@ int main(){
   cin.tie(0);
 
   
-  //2230
+  
   //2473
   //16234
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1. ?? ㅇㄴ 난감하네
+  int n;
+  cin >> n;
 
-  //2. ???
+  vector<ll> v(n);
 
-  int n,m;
-
-  cin >> n >> m;
-
-  //같은 수를 선택하라고 나올 수 있음 그땐 차이가 0일텐데 만약 m의 값이 0으로 주어졌다면
-  //그땐 어떤 수열을 받아도 N이 1보다 크기 때문에 당연히 0이 가장 작은 갭이다.
-  if(m == 0){
-    cout << 0 << '\n';
-    return 0;
-  }
-
-  vector<int> v(n);
-
-  for(int i = 0;  i < n ; ++i){
+  for(int i = 0 ; i<n; ++i){
     cin >> v[i];
   }
 
   sort(v.begin(), v.end());
 
-  int start = 0;
-  int end = 0;
+  ll min_diff = 3e10;
+  vector<ll> ans(3);
 
-  int gap = 0;
-  int min_len = 2e9 + 1;
+  for(int i = 0 ; i < n ; ++i){
+    //i로 돌아가면서 모든 상황에 대해서 계산
 
-  while(end < n){
+    int l = 0 , r = n-1;
 
-    
-    gap = abs(v[start] - v[end]);
+    while(l<r){
 
-    if(gap >= m){
-      if(gap == m){
-        min_len = gap;
-        break;
+      if(l==i){
+        ++l;
+        continue;
+      }
+      if(r==i){
+        --r;
+        continue;
       }
 
+      ll sum = v[i] + v[l] + v[r];
 
-      min_len = min(min_len, gap);
-      start++;
+      if(min_diff > abs(sum)){
+        
+        min_diff = abs(sum);
+        ans[0] = v[i];
+        ans[1] = v[l];
+        ans[2] = v[r];
+
+        if(sum == 0) break;
+      }
+
+      if(sum < 0){
+        ++l;
+      }
+      else{
+        --r;
+      }
     }
-    else if(gap < m){
-      end++;
-    }
-    
 
 
 
@@ -76,9 +77,11 @@ int main(){
 
 
 
-  cout << min_len << '\n';
-  
+  sort(ans.begin(), ans.end());
 
+  for(int k  : ans){
+    cout << k << " ";
+  }
 
 
   return 0;
