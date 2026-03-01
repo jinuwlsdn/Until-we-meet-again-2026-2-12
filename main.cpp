@@ -9,29 +9,9 @@
 
 using namespace std;
 
-//const int MAX = 100000;
-vector<int> v[100001];
-long long di[100001];
-long long ti[100001];
-bool visited[100001];
-int n,m,r;
-int orders = 1;
-
-void dfs(int curr, int depth){
-
-  ti[curr] = orders++;
-  visited[curr] = true;
-  di[curr] = depth;
-
-  for(int next : v[curr]){
-    if(!visited[next]){
-      dfs(next, depth+1);
-    }
-  }
-
-
-}
-
+vector<int> min_city;
+vector<int> cities[300001];
+bool visited[300001];
 
 int main(){
 
@@ -40,41 +20,73 @@ int main(){
 
   
   
-  //24483
+  //18352
   //16234
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  
-  memset(di, -1 , sizeof(di));
-  memset(ti, 0 , sizeof(ti));
-  
-  cin >> n >> m >> r;
+  //1. dfs를 썼을땐 한번에 하나만 검사하니까 얘가 최단거리인지 아니면 구불구불하게 왔는지 모르는데
+  //bfs를 쓰면 구불구불하게 오지 않고 바로 최단거리로 오기때문에 
 
-  
+  //2. O(V+E) 정점은 300000 간선은 도로 개수니까 1000000 1300000은 2억보다 작다.
 
-  for(int i = 0 ; i < m ;  ++i){
+
+  int n,m,k,x;
+
+  cin >> n >> m >> k >> x;
+
+  //거리가 K 출발 도시 번호가 X
+
+  for(int i =0 ; i < m ; ++i){
     int p,q;
-
     cin >> p >> q;
 
-    v[p].push_back(q);
-    v[q].push_back(p);
+    cities[p].push_back(q);
+    
   }
 
-  //오름차순방문
-  for(int i = 1 ; i<=n ; ++i){
-    sort(v[i].begin(), v[i].end());
+  queue<pair<int,int>> q;
+
+  q.push({x,0});
+  visited[x] = true;
+
+  while(!q.empty()){
+
+    int curr = q.front().first;
+    int len = q.front().second;
+
+    q.pop();
+
+    if(len == k){
+      min_city.push_back(curr);
+      continue;
+      //값을 넣고 k를 넘어가면 어떤 도시도 답이 될 수 없다.
+    } 
+    for(int next : cities[curr]){
+      if(!visited[next]){
+        //next가 되는 값이 방문 X 
+        //다른 도시에서 넣어도 최단거리는 아닌데 중복해서 넣으면 안되기 때문에
+
+        visited[next] = true;
+        q.push({next, len+1});
+      }
+    }
+
+
   }
 
-  dfs(r,0);
 
 
-  long long sum = 0;
-  for(int i = 1 ; i <= n; ++i){
-    sum += di[i] * ti[i];
+
+
+  sort(min_city.begin(), min_city.end());
+
+  if(min_city.size() == 0) cout << -1 << '\n';
+  else{
+    for(int it : min_city){
+      cout << it << '\n';
+    }
   }
-  cout << sum << '\n';
 
   return 0;
 }

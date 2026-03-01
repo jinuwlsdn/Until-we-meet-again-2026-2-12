@@ -9,77 +9,84 @@
 
 using namespace std;
 
+vector<int> min_city;
+vector<int> cities[300001];
+bool visited[300001];
+
 int main(){
 
   ios::sync_with_stdio(false);
   cin.tie(0);
 
   
-  //2230
-  //2473
+  
+  //18352
   //16234
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1. ?? ㅇㄴ 난감하네
+  //1. dfs를 썼을땐 한번에 하나만 검사하니까 얘가 최단거리인지 아니면 구불구불하게 왔는지 모르는데
+  //bfs를 쓰면 구불구불하게 오지 않고 바로 최단거리로 오기때문에 
 
-  //2. ???
+  //2. 이런 경우에는 시간복잡도를 어떻게 구하는거
 
-  int n,m;
 
-  cin >> n >> m;
+  int n,m,k,x;
 
-  //같은 수를 선택하라고 나올 수 있음 그땐 차이가 0일텐데 만약 m의 값이 0으로 주어졌다면
-  //그땐 어떤 수열을 받아도 N이 1보다 크기 때문에 당연히 0이 가장 작은 갭이다.
-  if(m == 0){
-    cout << 0 << '\n';
-    return 0;
+  cin >> n >> m >> k >> x;
+
+  //거리가 K 출발 도시 번호가 X
+
+  for(int i =0 ; i < m ; ++i){
+    int p,q;
+    cin >> p >> q;
+
+    cities[p].push_back(q);
+    cities[q].push_back(p);
   }
 
-  vector<int> v(n);
+  queue<pair<int,int>> q;
 
-  for(int i = 0;  i < n ; ++i){
-    cin >> v[i];
-  }
+  q.push({x,0});
+  visited[x] = true;
 
-  sort(v.begin(), v.end());
+  while(!q.empty()){
 
-  int start = 0;
-  int end = 0;
+    int curr = q.front().first;
+    int len = q.front().second;
 
-  int gap = 0;
-  int min_len = 2e9 + 1;
+    q.pop();
 
-  while(end < n){
+    if(len == k){
+      min_city.push_back(curr);
+      continue;
+      //값을 넣고 k를 넘어가면 어떤 도시도 답이 될 수 없다.
+    } 
+    for(int next : cities[curr]){
+      if(!visited[next]){
+        //next가 되는 값이 방문 X 
+        //다른 도시에서 넣어도 최단거리는 아닌데 중복해서 넣으면 안되기 때문에
 
-    
-    gap = abs(v[start] - v[end]);
-
-    if(gap >= m){
-      if(gap == m){
-        min_len = gap;
-        break;
+        visited[next] = true;
+        q.push({next, len+1});
       }
-
-
-      min_len = min(min_len, gap);
-      start++;
     }
-    else if(gap < m){
-      end++;
-    }
-    
-
 
 
   }
 
 
 
-  cout << min_len << '\n';
-  
 
 
+  sort(min_city.begin(), min_city.end());
+
+  if(min_city.size() == 0) cout << -1 << '\n';
+  else{
+    for(int it : min_city){
+      cout << it << '\n';
+    }
+  }
 
   return 0;
 }
