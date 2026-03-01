@@ -9,48 +9,29 @@
 
 using namespace std;
 
+//const int MAX = 100000;
+vector<int> v[100001];
+long long di[100001];
+long long ti[100001];
+bool visited[100001];
+int n,m,r;
+int orders = 1;
 
-vector<char> input_value;
-//bool visited[16];
-vector<string> result;
-int l,c;
+void dfs(int curr, int depth){
 
-void recurse(int depth, int next ,string words){
+  ti[curr] = orders++;
+  visited[curr] = true;
+  di[curr] = depth;
 
-  if(depth == l){
-    //모음과 자음이 알맞게 들어갔는지 확인을해야한다.
-
-    int mo = 0;
-    int ja = 0;
-    //모는 1이상 자는 2이상이 되었을때 만족하는 words라서 그때 
-    //push_back하고 아니면 return한다.
-    for(int i = 0 ; i<words.length(); ++i){
-      if(words[i] == 'a' || words[i] == 'e' || 
-        words[i] == 'i' || words[i] == 'o' || words[i] == 'u' ){
-          mo++;
-        }
-      else{
-        ja++;
-      }
+  for(int next : v[curr]){
+    if(!visited[next]){
+      dfs(next, depth+1);
     }
-
-    if(mo >= 1 && ja >= 2){
-      //result.push_back(words);
-      cout << words << '\n';
-    }
-    else return;
-    
-
-    
-  }
-
-
-  for(int i = next ; i<c; ++i){
-    recurse(depth+1, i+1, words + input_value[i]);
   }
 
 
 }
+
 
 int main(){
 
@@ -59,36 +40,41 @@ int main(){
 
   
   
-  //1759
+  //24483
   //16234
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1. 중복 X 서로다른 소문자  길이는 L 결과값에 넣을때 확인
-
+  
+  memset(di, -1 , sizeof(di));
+  memset(ti, 0 , sizeof(ti));
+  
+  cin >> n >> m >> r;
 
   
 
-  cin >> l >> c;
+  for(int i = 0 ; i < m ;  ++i){
+    int p,q;
 
-  input_value.resize(c);
-  for(int i = 0 ; i < c ; ++i){
-    cin >> input_value[i];
+    cin >> p >> q;
+
+    v[p].push_back(q);
+    v[q].push_back(p);
   }
 
-  sort(input_value.begin(), input_value.end());
-  
+  //오름차순방문
+  for(int i = 1 ; i<=n ; ++i){
+    sort(v[i].begin(), v[i].end());
+  }
 
-  recurse(0,0,"");
+  dfs(r,0);
 
 
-
-
-  // sort(result.begin(), result.end());
-
-  // for(string ans : result){
-  //   cout << ans << '\n';
-  // }
+  long long sum = 0;
+  for(int i = 1 ; i <= n; ++i){
+    sum += di[i] * ti[i];
+  }
+  cout << sum << '\n';
 
   return 0;
 }
