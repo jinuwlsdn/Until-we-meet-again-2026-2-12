@@ -9,9 +9,19 @@
 
 using namespace std;
 
-vector<int> min_city;
-vector<int> cities[300001];
-bool visited[300001];
+int is_palin(string input_str,int start , int end){
+  while(start < end){
+
+    if(input_str[start] ==  input_str[end]){
+      //같은 문자
+      start++;
+      end--;
+    }
+    else return 2;
+  }
+
+  return 1;
+}
 
 int main(){
 
@@ -20,73 +30,60 @@ int main(){
 
   
   
-  //18352
+  //17609
   //16234
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1. dfs를 썼을땐 한번에 하나만 검사하니까 얘가 최단거리인지 아니면 구불구불하게 왔는지 모르는데
-  //bfs를 쓰면 구불구불하게 오지 않고 바로 최단거리로 오기때문에 
+  //1. 문자열받는다.
 
-  //2. 이런 경우에는 시간복잡도를 어떻게 구하는거
+  int T;
+  cin >> T;
+  vector<string> str(T);
 
+  for(int i =0 ; i  < T ; ++i){
+    string s;
+    cin >> s;
+    int judge = 0;
 
-  int n,m,k,x;
+    int start = 0;
+    int end = s.length()-1;
 
-  cin >> n >> m >> k >> x;
+    while(start < end){
 
-  //거리가 K 출발 도시 번호가 X
+      if(s[start] ==  s[end]){
+        //같은 문자
+        start++;
+        end--;
+      }
+      else{
+        //다른문자야
+        //summuus 라면 
+        //0123456
+        // 234만 판단을 할텐데 u을 제거 했을때 판별하는 인덱스 에다가 end-1 한 값을 넣
 
-  for(int i =0 ; i < m ; ++i){
-    int p,q;
-    cin >> p >> q;
+        //
 
-    cities[p].push_back(q);
-    cities[q].push_back(p);
-  }
+        int case1 = is_palin(s, start+1, end);
+        int case2 = is_palin(s, start, end-1);
+        if(case1 == 1 || case2 == 1){
+          judge = 1;
+        }
+        else{
+          judge =2;
+        }
 
-  queue<pair<int,int>> q;
-
-  q.push({x,0});
-  visited[x] = true;
-
-  while(!q.empty()){
-
-    int curr = q.front().first;
-    int len = q.front().second;
-
-    q.pop();
-
-    if(len == k){
-      min_city.push_back(curr);
-      continue;
-      //값을 넣고 k를 넘어가면 어떤 도시도 답이 될 수 없다.
-    } 
-    for(int next : cities[curr]){
-      if(!visited[next]){
-        //next가 되는 값이 방문 X 
-        //다른 도시에서 넣어도 최단거리는 아닌데 중복해서 넣으면 안되기 때문에
-
-        visited[next] = true;
-        q.push({next, len+1});
       }
     }
 
+    cout << judge << '\n';
 
   }
 
 
+  
 
 
-
-  sort(min_city.begin(), min_city.end());
-
-  if(min_city.size() == 0) cout << -1 << '\n';
-  else{
-    for(int it : min_city){
-      cout << it << '\n';
-    }
-  }
 
   return 0;
 }
