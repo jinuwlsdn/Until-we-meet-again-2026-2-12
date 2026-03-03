@@ -9,19 +9,9 @@
 
 using namespace std;
 
-int is_palin(string input_str,int start , int end){
-  while(start < end){
+vector<int> v[101];
+vector<int> result[101];
 
-    if(input_str[start] ==  input_str[end]){
-      //같은 문자
-      start++;
-      end--;
-    }
-    else return 2;
-  }
-
-  return 1;
-}
 
 int main(){
 
@@ -30,59 +20,72 @@ int main(){
 
   
   
-  //17609
+  //1389
   //16234
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1. 문자열받는다.
 
-  int T;
-  cin >> T;
-  vector<string> str(T);
+  int n,m;
 
-  for(int i =0 ; i  < T ; ++i){
-    string s;
-    cin >> s;
-    int judge = 0;
+  cin >> n >> m;
 
-    int start = 0;
-    int end = s.length()-1;
+  for(int i = 0 ; i < m ;  ++i){
+    int p,q;
+    cin >> p >> q;
 
-    while(start < end){
+    v[p].push_back(q);
+    v[q].push_back(p);
+  }
+  
 
-      if(s[start] ==  s[end]){
-        //같은 문자
-        start++;
-        end--;
-      }
-      else{
-        //다른문자야
-        //summuus 라면 
-        //0123456
-        // 234만 판단을 할텐데 u을 제거 했을때 판별하는 인덱스 에다가 end-1 한 값을 넣
+  
+  for(int i=1 ; i<=n; ++i){
+    queue<pair<int, int>> q;
+    
+    
+    bool visited[101];
+    memset(visited, false, sizeof(visited));
+    q.push({i,0});
+    visited[i] = true;
 
-        //
+    while(!q.empty()){
 
-        int case1 = is_palin(s, start+1, end);
-        int case2 = is_palin(s, start, end-1);
-        if(case1 == 1 || case2 == 1){
-          judge = 1;
+      int person = q.front().first;
+      int depth = q.front().second;
+
+      q.pop();
+
+      for(int next : v[person]){
+
+        if(!visited[next]){
+          visited[next] =true;
+          q.push({next, depth+1});
+          result[i].push_back(depth);
         }
-        else{
-          judge =2;
-        }
-        break;
-
       }
+
     }
-
-    cout << judge << '\n';
 
   }
 
+  int min_value  =  5000000;
+  int min_person = 0;
+  for(int i = 1; i <= n ; ++i){
+    int sum = 0;
 
-  
+    for(int value : result[i]){
+      sum += value;
+    }
+
+    if(min_value > sum){
+      min_value = sum;
+      min_person = i;
+    }
+  }
+
+
+  cout << min_person << '\n';
 
 
 
