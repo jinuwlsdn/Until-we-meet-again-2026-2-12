@@ -9,20 +9,34 @@
 
 using namespace std;
 
-const int MAX  = 100;
+vector<int> num;
+int n;
 
-int dx[6] = {1,0,-1,0,0,0};
-int dy[6] = {0,1,0,-1,0,0};
-int dz[6] = {0,0,0,0,1,-1};
+int search_n(int target){
 
-int tomato[MAX+1][MAX+1][MAX+1];
+  int left = 0, right = n-1;
+
+  while(left <= right){
+    
+    int mid = (left+right)/2;
+
+    if(num[mid] == target){
+      return 1;
+    }
+    else if(num[mid] > target){
+      right = mid -1;
+    }
+    else{
+      //num[mid] < target
+      left = mid + 1;
+    }
+
+    //12345
+  }
 
 
-struct Location{
-  int h, y , x;
-};
-
-
+  return 0;
+}
 
 int main(){
 
@@ -31,30 +45,64 @@ int main(){
 
   
   
-  //
+  //1920
   //16234
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
 
-  //1 문제에서 시키는대로 구현만 하면 될 것 같다 근데 한 중심으로
-  //퍼지는 부분이니까 bfs를 사용하면 될 것 같고 그래프에다가 값을 넣어서 !q.empty() 될때까지
-  //작업을 시행한다 그리고 그래프에서 값을 탐색하면서 만약 0이 있다면 -1이고  모두 익어있으면
-  //0을 출력하고 아니면 최소날짜기때문에 그래프중에서 가장 높은 값을 선택하면된다.
-  //그래프 탐색하면서 값을 줄때 현재값 + 1을 주면 다음날로 저장이 된다.
+  //1. n개의 정수가 주어졌을때 x라는 정수가 존재하나 안하나 이분탐색으로 찾으면 될 것 같다.
 
-  //2. O(V+E) 1000 * 1000 + 4 * 1000 * 1000 1억보다 작다.
+  //2. M의 최댓값이 십만이고 N도 십만이니까 브루트포스로 만약 하나하나 다 찾아본다면 N^2 1억을 훨씬 넘긴다.
+  //따라서 이분탐색의 방법으로 찾아야한다.
 
-  //3. 이차원배열 및 visited
-  // 1000 * 1000 * 4 = 4000000 백만바이트 4mb 충분하다
-
-  //visited 안하는거
-
+  //3. vector를 사용하자.
 
   
 
+  cin >> n;
+
   
- 
+
+  for(int i = 0 ; i < n ; ++i){
+    int k;
+    cin >> k;
+    num.push_back(k);
+  }
+
+  int m;
+
+  cin >> m;
+
+  vector<int> search_num;
+
+  for(int i = 0 ; i < m ; ++i){
+    int k;
+    cin >> k;
+    search_num.push_back(k);
+  }
+
+  //1 2 3 4 5
+  //정렬을 하고 left right 값을 받아온 후 index로 조정을한다
+  //만약 탐색한 값이 작다면 올리고 크면 내린다 같으면 탐색종료
+
+  
+  sort(num.begin(), num.end());
+
+  for(int i = 0 ; i < m ; ++i){
+    int k = search_num[i];
+
+    int check = search_n(k);
+
+    cout << check << '\n';
+  }
+
+
+
+
+
+
+
 
   return 0;
 }
