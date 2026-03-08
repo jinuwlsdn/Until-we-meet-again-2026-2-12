@@ -1,54 +1,62 @@
 #include <iostream>
 #include <vector>
-#include <string>
 #include <algorithm>
 
 using namespace std;
 
-int n;
-char op[10];
-bool visited[10];
-vector<string> results; // 조건을 만족하는 모든 문자열을 담을 벡터
+// 기준 거리(mid)를 가지고 C개 이상의 공유기를 설치할 수 있는지 확인하는 함수
+bool canInstall(const vector<int>& houses, int n, int c, int dist) {
+    int count = 1; // 첫 번째 집에는 무조건 설치
+    int lastInstalled = houses[0];
 
-// 현재 숫자(prev), 다음 숫자(curr)가 부등호(op)를 만족하는지 체크
-bool check(int prev, int curr, char oper) {
-    if (oper == '<') return prev < curr;
-    if (oper == '>') return prev > curr;
-    return false;
-}
-
-void dfs(int depth, string s) {
-    if (depth == n + 1) {
-        results.push_back(s); // 완성된 문자열 저장
-        return;
-    }
-
-    for (int i = 0; i <= 9; i++) { // 0부터 9까지 모든 숫자 시도
-        if (!visited[i]) {
-            // 첫 번째 숫자는 그냥 넣고, 
-            // 두 번째부터는 직전 숫자(s.back())와 부등호 조건을 검사
-            if (depth == 0 || check(s.back() - '0', i, op[depth - 1])) {
-                visited[i] = true;
-                dfs(depth + 1, s + to_string(i));
-                visited[i] = false;
-            }
+    for (int i = 1; i < n; i++) {
+        // 현재 집과 마지막 설치된 집 사이의 거리가 기준 거리(dist) 이상이면 설치
+        if (houses[i] - lastInstalled >= dist) {
+            count++;
+            lastInstalled = houses[i];
         }
     }
+
+    // 설치된 개수가 목표(c)보다 크거나 같으면 true 반환
+    return count >= c;
 }
 
 int main() {
-    cin >> n;
-    for (int i = 0; i < n; i++) cin >> op[i];
+    // 입출력 속도 향상
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
 
-    dfs(0, "");
+    int n, c;
+    cin >> n >> c;
 
-    // 모든 가능한 답이 results에 들어있음
-    // DFS는 0부터 순차적으로 탐색하므로 
-    // 첫 번째 원소가 최소값, 마지막 원소가 최대값입니다.
-    sort(results.begin(), results.end());
+    vector<int> houses(n);
+    for (int i = 0; i < n; i++) {
+        cin >> houses[i];
+    }
 
-    cout << results.back() << "\n"; // 최대값
-    cout << results.front() << "\n"; // 최소값
+    // 1. 이분 탐색을 위한 정렬
+    sort(houses.begin(), houses.end());
+
+    // 2. 이분 탐색 범위 설정
+    int start = 1; // 최소 거리
+    int end = houses[n - 1] - houses[0]; // 최대 거리
+    int result = 0;
+
+    while (start <= end) {
+        int mid = (start + end) / 2;
+
+        // 3. 결정 함수 호출
+        if (canInstall(houses, n, c, mid)) {
+            // 성공했다면, 거리를 더 늘려본다 (최댓값을 찾기 위해)
+            result = mid;
+            start = mid + 1;
+        } else {
+            // 실패했다면, 거리를 좁힌다
+            end = mid - 1;
+        }
+    }
+
+    cout << result << "\n";
 
     return 0;
 }
