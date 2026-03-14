@@ -6,70 +6,46 @@
 #include <cstring>
 #include <set>
 #include <math.h>
+#include <map>
+
 
 using namespace std;
 
 typedef long long ll;
 
 
+int yen[6] = {500,100,50,10,5,1};
+
 int main(){
 
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  //2110
+
+  //5585
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1. 생각좀 해보자
 
-  int n,c;
+  int k;
+  cin >> k;
+  int pay = 1000 - k;
 
-  cin >> n >> c;
+  int change = 0;
 
-  vector<int> house(n);
+  for(int i = 0 ; i < 6 ; ++i){
+    if(pay / yen[i] != 0 ){
+      //동전으로 바꿀 수 있다.
 
-  for(int i = 0 ; i < n ; ++i){
-    cin >> house[i];
-  }
+      change += pay/yen[i];
 
-  sort(house.begin(), house.end());
-
-  int left = 0 , right = house[n-1] - house[0];
-
-
-  int result  = 0 ;
-
-  while(left<=right){
-    int mid = (left+right) / 2;
-
-    int count = 1;
-
-    int next_house = house[0];
-    for(int j = 1; j<n; ++j){
-      if(house[j] - next_house >= mid){
-        count++;
-        next_house = house[j];
-      }
+      pay = pay % yen[i];
     }
-
-    if(count >= c){
-      result = mid;
-      left = mid+1;
-    }
-    else{
-      right = mid - 1;
-    }
-
   }
 
 
+  cout << change << '\n'
 
-  cout << result << '\n';
-
-
-
- 
 
   return 0;
 }
