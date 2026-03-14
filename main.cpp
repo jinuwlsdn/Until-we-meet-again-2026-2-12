@@ -22,29 +22,35 @@ int main(){
   cin.tie(0);
 
 
-  //5585
+  //1789
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
 
-  int k;
-  cin >> k;
-  int pay = 1000 - k;
+  ll s;
+  cin >> s;
 
-  int change = 0;
+  long long n =1;
+  
+  ll sum = 0;
 
-  for(int i = 0 ; i < 6 ; ++i){
-    if(pay / yen[i] != 0 ){
-      //동전으로 바꿀 수 있다.
+  int count = 0;
 
-      change += pay/yen[i];
-
-      pay = pay % yen[i];
-    }
+  while(1){
+    sum += n;
+    if(sum > s) break;
+    
+    n++;
+    count++;
   }
 
+  //n의 최댓값은 63,245.55~
+  //n을 최대로 돌린다고 해도 시간복잡도가 2억 밑이다.
 
-  cout << change << '\n'
+  cout << count << '\n';
+
+  //s - n*n + n  < n
+  //s < n * n
 
 
   return 0;
