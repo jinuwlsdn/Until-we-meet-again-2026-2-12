@@ -13,8 +13,7 @@ using namespace std;
 
 typedef long long ll;
 
-
-int yen[6] = {500,100,50,10,5,1};
+int dp[101];
 
 int main(){
 
@@ -22,30 +21,32 @@ int main(){
   cin.tie(0);
 
 
-  //1789
+  //9461
+  
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
+  dp[1] = 1;
+  dp[2] = 1;
+  dp[3] = 1;
+  dp[4] = 2;
+  dp[5] = 2;
 
-  ll s;
-  cin >> s;
 
-  int n =1;
-  while(1){
+  int T;
+  cin >> T;
 
-    if((n*n + n) / 2 > s){
-      break;
-    }
-    else n++;
+  for(int i = 6; i<101; ++i){
+    dp[i] = dp[i-5] + dp[i-1];
   }
 
-  //n의 최댓값은 63,245.55~
-  //n을 최대로 돌린다고 해도 시간복잡도가 2억 밑이다.
-
-  cout << n-1 << '\n';
-
-  //s - n*n + n  < n
-  //s < n * n
+  while(T--){
+    int n;
+    cin >> n;
+    cout << dp[n] << '\n';
+  }
+  
+  
 
 
   return 0;
