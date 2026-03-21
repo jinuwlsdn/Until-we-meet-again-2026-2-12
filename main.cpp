@@ -16,9 +16,8 @@ typedef long long ll;
 
 typedef pair<int, int> pii;
 
-vector<pii> adj[1001];
-int dist[1001];
-bool visited[1001];
+vector<pii> adj[20001];
+int dist[20001];
 
 const int INF = 1e9;
 
@@ -30,60 +29,68 @@ int main(){
 
   
   
-  //1916
+  //1753
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  
+  //1. 데이크스트라 알고리즘을 사용하여 문제를 풀면될것같다.
+  //이 때 u - > v 양방향이 아니다.
+  //최단 경로의 경로값
 
-  //O(ElogV) E는 100000이고 V는 1000 log1024 = x 2^x = 1024 x는 10
-  //O(ElogV) 는 100000 * 10  백만
+  //O(ElogV) 300000 * log 20000 / 2^x = 20000 14.~~ / 14*300000 1억보다 작다.
 
-  int n,m;
-  cin >> n >> m;
+  int v,e;
 
-  for(int i = 0 ; i < m ; ++i){
-    int a,b,c;
-    cin >> a >> b >> c;
-    adj[a].push_back({c,b});
-    
+  cin >> v >> e;
+
+  int k;
+  cin>>k;
+
+  for(int i = 0; i<e ; ++i){
+    int u,v,w;
+    cin >> u >> v >> w;
+
+    adj[u].push_back({w,v});
   }
 
-  int start,end;
-  cin >> start >> end;
+  dist[k] = 0;
+
+  fill(dist , dist+v+1, INF);
 
   priority_queue<pii, vector<pii>, greater<pii>> pq;
 
-  fill(dist, dist+n+1, INF);
-
-  pq.push({0,start});
-  dist[start] =0;
-
-  //간선의 개수 N-1 * 비용  = 최댓값 99,900,000
+  pq.push({0,k});
 
   while(!pq.empty()){
-    int d= pq.top().first;
+    int d = pq.top().first;
     int curr = pq.top().second;
 
     pq.pop();
 
     if(dist[curr] < d) continue;
 
-    if(curr == end) break;
+    dist[curr] = d;
 
     for(auto& edge : adj[curr]){
       int next_w = edge.first;
       int next_node = edge.second;
 
-      if(dist[next_node] > d + next_w){
-        dist[next_node] = d + next_w;
+      if(dist[next_node] > d+next_w){
+        dist[next_node] = d+next_w;
         pq.push({dist[next_node], next_node});
       }
     }
+
   }
 
-
-  cout << dist[end] << '\n';
+  for(int i = 1; i <= v ; ++i){
+    if(dist[i] == INF){
+      cout << "INF" << '\n';
+    }
+    else{
+      cout << dist[i] << '\n';
+    }
+  }
 
   return 0;
 }
