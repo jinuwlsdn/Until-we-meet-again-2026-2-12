@@ -14,11 +14,13 @@ using namespace std;
 
 typedef long long ll;
 
-typedef pair<double , double> pdd;
-typedef pair<double, int> pdi;
+typedef pair<int, int> pii;
 
-vector<pdi> adj[101];
-bool visited[101];
+vector<pii> adj[1001];
+int dist[1001];
+bool visited[1001];
+
+const int INF = 1e9;
 
 int main(){
 
@@ -28,71 +30,60 @@ int main(){
 
   
   
-  //4386
+  //1916
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
+  
 
-  //1.한 좌표에 대해서 모든 좌표를 돌리면서 가중치값과 
-  //간선들을 서로서로 연결한다.
+  //O(ElogV) E는 100000이고 V는 1000 log1024 = x 2^x = 1024 x는 10
+  //O(ElogV) 는 100000 * 10  백만
 
-  //2. O(V + V^2 + ElogV) 간선이 100 * 100 임의의 간선을 만드니까 그리고 log V는 V가 100
-  //V^2 가장 크다  100 * 100
-  int n;
+  int n,m;
+  cin >> n >> m;
 
-  cin >> n;
-
-  vector<pdd> v(n);
-
-  for(int i =0 ; i < n ; ++i){
-    cin >> v[i].first >> v[i].second;
+  for(int i = 0 ; i < m ; ++i){
+    int a,b,c;
+    cin >> a >> b >> c;
+    adj[a].push_back({c,b});
+    
   }
 
-  for(int i = 0 ; i < n ; ++i){
-    for(int j = 0 ; j < n ; ++j){
-      if(i==j) continue;
-      double length = sqrt(pow(v[i].first - v[j].first, 2) + pow(v[i].second - v[j].second, 2));
-      
-      adj[i].push_back({length,j});
+  int start,end;
+  cin >> start >> end;
 
-    }
-  }
+  priority_queue<pii, vector<pii>, greater<pii>> pq;
 
-  priority_queue<pdi, vector<pdi>, greater<pdi>> pq;
+  fill(dist, dist+n+1, INF);
 
-  pq.push({0, 0});
+  pq.push({0,start});
+  dist[start] =0;
 
+  //간선의 개수 N-1 * 비용  = 최댓값 99,900,000
 
-  double totalweight = 0;
-  int count = 0;
   while(!pq.empty()){
-    double w = pq.top().first;
+    int d= pq.top().first;
     int curr = pq.top().second;
 
     pq.pop();
 
+    if(dist[curr] < d) continue;
 
-    if(visited[curr]) continue;
-
-    count++;
-    visited[curr] = true;
-    totalweight += w;
+    if(curr == end) break;
 
     for(auto& edge : adj[curr]){
-      double next_w = edge.first;
+      int next_w = edge.first;
       int next_node = edge.second;
 
-      if(!visited[next_node]){
-        pq.push({next_w, next_node});
+      if(dist[next_node] > d + next_w){
+        dist[next_node] = d + next_w;
+        pq.push({dist[next_node], next_node});
       }
-
     }
-
-    if(count == n) break;
   }
 
 
-  cout << fixed << setprecision(2) << totalweight << '\n';
+  cout << dist[end] << '\n';
 
   return 0;
 }
