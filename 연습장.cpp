@@ -1,62 +1,66 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
+#include <queue>
 
 using namespace std;
 
-// 기준 거리(mid)를 가지고 C개 이상의 공유기를 설치할 수 있는지 확인하는 함수
-bool canInstall(const vector<int>& houses, int n, int c, int dist) {
-    int count = 1; // 첫 번째 집에는 무조건 설치
-    int lastInstalled = houses[0];
+// {가중치, 정점 번호} 순서로 저장 (priority_queue 정렬 기준 때문)
+typedef pair<int, int> Edge;
 
-    for (int i = 1; i < n; i++) {
-        // 현재 집과 마지막 설치된 집 사이의 거리가 기준 거리(dist) 이상이면 설치
-        if (houses[i] - lastInstalled >= dist) {
-            count++;
-            lastInstalled = houses[i];
+void prim(int startNode, int V, vector<Edge> adj[]) {
+    // 1. 초기화
+    vector<bool> visited(V + 1, false);
+    priority_queue<Edge, vector<Edge>, greater<Edge>> pq; // 최소 힙
+
+    // 시작 정점 설정 (비용 0으로 시작)
+    pq.push({0, startNode});
+    
+    int mstWeight = 0;
+    int edgesCount = 0;
+
+    cout << "선택된 간선 순서:\n";
+
+    while (!pq.empty()) {
+        int w = pq.top().first;  // 현재 가장 작은 가중치
+        int u = pq.top().second; // 해당 간선이 가리키는 정점
+        pq.pop();
+
+        // 2. 이미 트리에 포함된 정점이면 무시 (중요!)
+        if (visited[u]) continue;
+
+        // 3. 정점 방문 처리 및 결과 합산
+        visited[u] = true;
+        mstWeight += w;
+        
+        if (w != 0) cout << "정점 연결 비용: " << w << endl;
+
+        // 4. 새로 추가된 정점 u와 연결된 간선들을 큐에 삽입
+        for (auto& next : adj[u]) {
+            int nextWeight = next.first;
+            int v = next.second;
+            
+            if (!visited[v]) {
+                pq.push({nextWeight, v});
+            }
         }
     }
 
-    // 설치된 개수가 목표(c)보다 크거나 같으면 true 반환
-    return count >= c;
+    cout << "최종 MST 가중치 합: " << mstWeight << endl;
 }
 
 int main() {
-    // 입출력 속도 향상
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
+    int V = 5; // 정점 개수
+    vector<Edge> adj[6];
 
-    int n, c;
-    cin >> n >> c;
+    // 그래프 데이터 (u, v, weight)
+    // 예: 1번과 2번이 가중치 2로 연결됨
+    adj[1].push_back({2, 2}); adj[2].push_back({2, 1});
+    adj[1].push_back({3, 3}); adj[3].push_back({3, 1});
+    adj[2].push_back({8, 3}); adj[3].push_back({8, 2});
+    adj[2].push_back({5, 4}); adj[4].push_back({5, 2});
+    adj[3].push_back({1, 4}); adj[4].push_back({1, 3});
 
-    vector<int> houses(n);
-    for (int i = 0; i < n; i++) {
-        cin >> houses[i];
-    }
-
-    // 1. 이분 탐색을 위한 정렬
-    sort(houses.begin(), houses.end());
-
-    // 2. 이분 탐색 범위 설정
-    int start = 1; // 최소 거리
-    int end = houses[n - 1] - houses[0]; // 최대 거리
-    int result = 0;
-
-    while (start <= end) {
-        int mid = (start + end) / 2;
-
-        // 3. 결정 함수 호출
-        if (canInstall(houses, n, c, mid)) {
-            // 성공했다면, 거리를 더 늘려본다 (최댓값을 찾기 위해)
-            result = mid;
-            start = mid + 1;
-        } else {
-            // 실패했다면, 거리를 좁힌다
-            end = mid - 1;
-        }
-    }
-
-    cout << result << "\n";
+    prim(1, V, adj);
 
     return 0;
 }

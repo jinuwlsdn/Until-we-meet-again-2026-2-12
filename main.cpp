@@ -13,9 +13,10 @@ using namespace std;
 
 typedef long long ll;
 
+typedef pair<int , int> pii;
 
-int graph[1025][1025];
-int dp[1025][1025];
+vector<pii> adj[1001];
+bool visited[1001];
 
 int main(){
 
@@ -25,55 +26,56 @@ int main(){
 
   
   
-  //11660
+  //1197
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //표를 그려서 생각해보면 된다. 직사각형들의 합으로 dp를 구현해야한다.
-  //출력을 할 때에도 직사각형들의 모음으로 합을 구해야한다.
+  
+  int v,e;
 
+  cin >> v >> e;
+  for(int i=0 ; i <e; ++i){
+    int u,v,w;
+    cin >> u >> v >>w;
 
-  int n,m;
-
-  cin >> n >> m;
-
-  // for(int i= 1 ; i<= n ; ++i){
-  //   for(int j = 1 ; j <= n ; ++j){
-  //     cin >> graph[i][j];
-  //   }
-  // }
-
-  int temp = 0;
-
-  for(int i= 1 ; i<= n ; ++i){
-    for(int j = 1 ; j <= n ; ++j){
-      cin >> temp;
-      dp[i][j] = dp[i-1][j] + dp[i][j-1] + temp - dp[i-1][j-1];
-    }
+    adj[u].push_back({w,v});
+    adj[v].push_back({w,u});
   }
 
+  ll totalweight = 0;
+  //가중치가 int범위를 넘을 수 있다.
 
-  // for(int i= 1 ; i<= n ; ++i){
-  //   for(int j = 1 ; j <= n ; ++j){
-  //     cout << dp[i][j] << " ";
-  //   }
-  //   cout << '\n';
-  // }
+  priority_queue<pii, vector<pii>, greater<pii>> pq;
 
-  
-  
+  pq.push({0,1});
 
-  while(m--){
-    int x1,y1,x2,y2;
+  while(!pq.empty()){
+    int w = pq.top().first;
+    int curr = pq.top().second;
 
-    cin >> x1>>y1>>x2>>y2;
+    pq.pop();
+
+    if(visited[curr]) continue;
+
+    visited[curr] = true;
+    totalweight += w;
+
+    for(auto& edge : adj[curr]){
+      int nextweight = edge.first;
+      int nextnode = edge.second;
+
+      if(!visited[nextnode]){
+        pq.push({nextweight, nextnode});
+      }
+
+    }
 
     
-
-    int value = dp[x2][y2] - dp[x1-1][y2] -dp[x2][y1-1] + dp[x1-1][y1-1];
-
-    cout << value << '\n';
   }
+
+
+
+  cout << totalweight << '\n';
 
 
   return 0;
