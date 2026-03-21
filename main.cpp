@@ -5,18 +5,20 @@
 #include <vector>
 #include <cstring>
 #include <set>
-#include <math.h>
+#include <cmath>
 #include <map>
+#include <iomanip> 
 
 
 using namespace std;
 
 typedef long long ll;
 
-typedef pair<int , int> pii;
+typedef pair<double , double> pdd;
+typedef pair<double, int> pdi;
 
-vector<pii> adj[100001];
-bool visited[100001];
+vector<pdi> adj[101];
+bool visited[101];
 
 int main(){
 
@@ -26,73 +28,71 @@ int main(){
 
   
   
-  //1647
+  //4386
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  
-  int n, m;
 
-  cin >> n >> m;
-  
-  int a,b,c;
+  //1.한 좌표에 대해서 모든 좌표를 돌리면서 가중치값과 
+  //간선들을 서로서로 연결한다.
 
-  for(int i = 0 ; i < m; ++i){
-    cin >> a >> b >> c;
+  //2. O(V + V^2 + ElogV) 간선이 100 * 100 임의의 간선을 만드니까 그리고 log V는 V가 100
+  //V^2 가장 크다  100 * 100
+  int n;
 
-    adj[a].push_back({c,b});
-    adj[b].push_back({c,a});
+  cin >> n;
+
+  vector<pdd> v(n);
+
+  for(int i =0 ; i < n ; ++i){
+    cin >> v[i].first >> v[i].second;
   }
 
+  for(int i = 0 ; i < n ; ++i){
+    for(int j = 0 ; j < n ; ++j){
+      if(i==j) continue;
+      double length = sqrt(pow(v[i].first - v[j].first, 2) + pow(v[i].second - v[j].second, 2));
+      
+      adj[i].push_back({length,j});
 
-  priority_queue<pii, vector<pii>, greater<pii>> pq;
+    }
+  }
 
-  
+  priority_queue<pdi, vector<pdi>, greater<pdi>> pq;
 
-  //1억 이하
-  int sum =0;
-  int max_value =0;
+  pq.push({0, 0});
 
-  //마을을 분리하고 각각 분리된 마을에서도 경로가 항상 존재하게 하도록 하면서
-  //나머지 길의 유지비의 합을 최소로 하고 싶다.
-  //mst를 만들고 거기서 가장 유지비가 높은 간선 하나를 제거하면 된다.
-  //
 
-  pq.push({0,1});
-  int count =0;
+  double totalweight = 0;
+  int count = 0;
   while(!pq.empty()){
-    int w  = pq.top().first;
+    double w = pq.top().first;
     int curr = pq.top().second;
 
     pq.pop();
 
+
     if(visited[curr]) continue;
 
-    //처음 방문했으면
-    visited[curr] = true;
-    sum += w;
-    max_value = max(max_value, w);
     count++;
+    visited[curr] = true;
+    totalweight += w;
 
     for(auto& edge : adj[curr]){
-      int nextweight = edge.first;
-      int nextnode = edge.second;
+      double next_w = edge.first;
+      int next_node = edge.second;
 
-      if(!visited[nextnode]){
-        pq.push({nextweight, nextnode});
+      if(!visited[next_node]){
+        pq.push({next_w, next_node});
       }
 
     }
 
-    //방문한 정점이 n개면 굳이 더 갈 필요가 없다 이미 mst를 만들어서
     if(count == n) break;
-
   }
 
-  
-  
-  cout << sum - max_value << '\n';
-  
-  
+
+  cout << fixed << setprecision(2) << totalweight << '\n';
+
   return 0;
 }
