@@ -29,37 +29,41 @@ int main(){
 
   
   
-  //1753
+  //1446
   
   //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-  //1. 데이크스트라 알고리즘을 사용하여 문제를 풀면될것같다.
-  //이 때 u - > v 양방향이 아니다.
-  //최단 경로의 경로값
+  //지름길이 있는건 지름길을 사용하고 없으면 그냥가야한다.
+  //만약에 0->30을 갔다고 하자 근데 29>100 직빵으로 가는 길이 있으면
+  //지나칠수있다. dist++하면서 
 
-  //O(ElogV) 300000 * log 20000 / 2^x = 20000 14.~~ / 14*300000 1억보다 작다.
+  int n,d;
 
-  int v,e;
+  cin >> n >> d;
 
-  cin >> v >> e;
 
-  int k;
-  cin>>k;
-
-  for(int i = 0; i<e ; ++i){
-    int u,v,w;
-    cin >> u >> v >> w;
-
-    adj[u].push_back({w,v});
+  
+  for(int i = 0 ; i<d ; ++i){
+    adj[i].push_back({1,i+1});
   }
 
-  dist[k] = 0;
+  for(int i = 0 ; i < n; ++i){
+    int a,b,c;
 
-  fill(dist , dist+v+1, INF);
+    cin >> a >> b >> c;
 
-  priority_queue<pii, vector<pii>, greater<pii>> pq;
+    if(b>d) continue;
 
-  pq.push({0,k});
+    adj[a].push_back({c,b});
+  }
+
+  dist[0] = 0;
+
+  priority_queue<pii, vector<pii> , greater<pii>> pq;
+  
+  pq.push({0,0});
+
+  fill(dist, dist+d+1, INF);
 
   while(!pq.empty()){
     int d = pq.top().first;
@@ -67,30 +71,26 @@ int main(){
 
     pq.pop();
 
-    if(dist[curr] < d) continue;
+    if(dist[curr] < d ) continue;
 
     dist[curr] = d;
 
     for(auto& edge : adj[curr]){
       int next_w = edge.first;
-      int next_node = edge.second;
+      int next_way = edge.second;
 
-      if(dist[next_node] > d+next_w){
-        dist[next_node] = d+next_w;
-        pq.push({dist[next_node], next_node});
+      if(dist[next_way] > next_w + d){
+        dist[next_way] = next_w + d;
+        pq.push({dist[next_way], next_way});
       }
     }
 
+
   }
 
-  for(int i = 1; i <= v ; ++i){
-    if(dist[i] == INF){
-      cout << "INF" << '\n';
-    }
-    else{
-      cout << dist[i] << '\n';
-    }
-  }
+
+  cout << dist[d] << '\n';
+  
 
   return 0;
 }
