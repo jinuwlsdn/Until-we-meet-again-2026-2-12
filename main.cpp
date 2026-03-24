@@ -18,8 +18,8 @@
 
   const int INF = 1e9;
 
-  int maze[101][101];
-  int dist[101][101];
+  int maze[126][126];
+  int dist[126][126];
 
   int dx[4] = {1,0,-1,0};
   int dy[4] = {0,1,0,-1};
@@ -27,85 +27,85 @@
 
   int main(){
 
-    ios::sync_with_stdio(false);
-    cin.tie(0);
+    // ios::sync_with_stdio(false);
+    // cin.tie(0);
 
 
     
-    //1261
+    //4485
     //9370
     
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    //1. 방을 이차원배열을 설정하고 각 배열마다 상하좌우로 adj에 넣는다
-    // 상하좌우로 값을 넣으면서 방이면 가중치가 0 벽이면 1로 넣는다
-    //만약 x,y지점까지 도달할 때 얼마나 많은 벽이 깨졌는지로 
-    //최단경로를 설정한다. 1,1에서 n,m이니까 
-    //마지막에 출력할때는 dist[n][m]출력하면된다 
-    
 
-    int m,n;
+    //1 (0,0)에서 (n-1,n-1) 까지 이동한다.
+    //잃는 금액을 최소로 한다는건 최단 경로를 의미한다.
+    //데이크스트라 알고리즘을 사용하여 풀면 될것같다.
 
-    cin >> m >> n;
+    //2. O(ElogV) (125*4) * log125 2^7 = 128 약 6.~~ 
+    //한번 하는데 500 * 6.~~  약 3000
 
+    int n;
+    int count = 1;
 
-    //세로는 n 가로는 m
-    for(int i = 1 ; i<=n ; ++i){
-      string line;
-      cin >> line;
+    while(1){
+      cin >> n;
+      if(n == 0 ) break;
 
-      for(int j = 1 ; j<=m; ++j){
-        maze[i][j] = line[j-1] - '0';
-        dist[i][j] = INF;
-      }
-    }
-
-    
-  
-    priority_queue<pair<int, pii>, vector<pair<int,pii>>, greater<pair<int, pii>>> pq;
-
-
-    dist[1][1] =0;
-    pq.push({0,{1,1}});
-
-    //fill(dist[0][0], dist[100][101], INF);
-
-    while(!pq.empty()){
-
-      
-      int d = pq.top().first;
-
-      int y = pq.top().second.first;
-      int x = pq.top().second.second;
-
-      pq.pop();
-
-      if(dist[y][x] < d) continue;
-
-
-    
-
-      for(int k = 0 ; k<4; ++k){
-
-        int ny = y+dy[k];
-        int nx = x+dx[k];
-
-        if(1<=ny && ny <= n && 1<=nx && nx <= m ){
-          
-          int weight = maze[ny][nx];
-          if(weight + d < dist[ny][nx]){
-            pq.push({weight+d,{ny,nx}});
-            dist[ny][nx] = weight + d;
-          }
-          
+      //좌표 입력받고
+      for(int i = 0 ; i < n ; ++i){
+        for(int j = 0 ; j < n ; ++j){
+          cin >> maze[i][j];
+          dist[i][j] = INF;
         }
-        
       }
 
+      //{가중치 , {(x,y)}} 로 받아서 우선순위큐에 넘겨줘야한다.
+      priority_queue<pair<int, pii>, vector<pair<int , pii>>, greater<pair<int,pii>>> pq;
 
+      pq.push({maze[0][0], {0,0}});
+
+      dist[0][0] = maze[0][0];
+
+      while(!pq.empty()){
+        int d = pq.top().first;
+
+        int y = pq.top().second.first;
+        int x = pq.top().second.second;
+
+        pq.pop();
+
+        
+        if(y == n-1 && x == n-1) break;
+        if(dist[y][x] < d) continue;
+
+        for(int i = 0 ; i < 4 ; ++i){
+          int ny = y + dy[i];
+          int nx = x + dx[i];
+
+          if(0<= ny && ny < n && 0<= nx && nx < n){
+            //좌표 값은 맞다.
+
+            if(dist[ny][nx] > d + maze[ny][nx]){
+              //최단 경로인가?
+              
+              dist[ny][nx] = d + maze[ny][nx];
+              pq.push({dist[ny][nx] , {ny,nx}});
+            }
+          }
+        }
+
+
+        
+
+      }
+
+      printf("Problem %d: %d\n",count,dist[n-1][n-1]);
+      
+      count++;
     }
 
-    cout << dist[n][m] << '\n';
+
 
     return 0;
   }
