@@ -1,110 +1,111 @@
-#include <cstdlib>
-#include <queue>
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <cstring>
-#include <set>
-#include <cmath>
-#include <map>
-#include <iomanip> 
+  #include <cstdlib>
+  #include <queue>
+  #include <iostream>
+  #include <algorithm>
+  #include <vector>
+  #include <cstring>
+  #include <set>
+  #include <cmath>
+  #include <map>
+  #include <iomanip> 
 
 
-using namespace std;
+  using namespace std;
 
-typedef long long ll;
+  typedef long long ll;
 
-typedef pair<int, int> pii;
+  typedef pair<int, int> pii;
 
-vector<pii> adj[801];
-int dist[801][801];
+  const int INF = 1e9;
 
-const int INF = 1e9;
+  int maze[101][101];
+  int dist[101][101];
 
-void dijkstra(int start){
+  int dx[4] = {1,0,-1,0};
+  int dy[4] = {0,1,0,-1};
 
-  priority_queue<pii, vector<pii>, greater<pii>> pq;
 
-  dist[start][start] = 0;
+  int main(){
 
-  pq.push({0,start});
-  
-  while(!pq.empty()){
-    int d = pq.top().first;
-    int curr = pq.top().second;
+    ios::sync_with_stdio(false);
+    cin.tie(0);
 
-    pq.pop();
 
-    if(dist[start][curr]  < d ) continue;
+    
+    //1261
+    //9370
+    
+    //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    dist[start][curr] = d;
+    //1. 방을 이차원배열을 설정하고 각 배열마다 상하좌우로 adj에 넣는다
+    // 상하좌우로 값을 넣으면서 방이면 가중치가 0 벽이면 1로 넣는다
+    //만약 x,y지점까지 도달할 때 얼마나 많은 벽이 깨졌는지로 
+    //최단경로를 설정한다. 1,1에서 n,m이니까 
+    //마지막에 출력할때는 dist[n][m]출력하면된다 
+    
 
-    for(auto& edge : adj[curr]){
-      int w = edge.first;
-      int way = edge.second;
+    int m,n;
 
-      if(dist[start][way] > d+w){
-        dist[start][way] = d+w;
-        pq.push({dist[start][way], way});
+    cin >> m >> n;
+
+
+    //세로는 n 가로는 m
+    for(int i = 1 ; i<=n ; ++i){
+      string line;
+      cin >> line;
+
+      for(int j = 1 ; j<=m; ++j){
+        maze[i][j] = line[j-1] - '0';
+        dist[i][j] = INF;
       }
     }
 
-  }
-}
-
-int main(){
-
-  ios::sync_with_stdio(false);
-  cin.tie(0);
-
-
+    
   
-  
-  //1504
-  
-  //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
-
-  //1.
-
-  int n,e;
-
-  cin >> n >> e;
-  
-  for(int i = 0 ; i < e ; ++i){
-    int a,b,c;
-
-    cin >> a >> b >> c;
-
-    adj[a].push_back({c,b});
-    adj[b].push_back({c,a});
-  }
+    priority_queue<pair<int, pii>, vector<pair<int,pii>>, greater<pair<int, pii>>> pq;
 
 
-  fill(&dist[0][0], &dist[n][n+1], INF);
+    dist[1][1] =0;
+    pq.push({0,{1,1}});
 
-  int v1,v2;
-  cin >> v1 >> v2;
+    //fill(dist[0][0], dist[100][101], INF);
 
-  dijkstra(1);
-  dijkstra(v1);
-  dijkstra(v2);
+    while(!pq.empty()){
 
-  ll case1 = (ll)dist[1][v1] + dist[v1][v2] + dist[v2][n];
-  ll case2 = (ll)dist[1][v2] + dist[v2][v1] + dist[v1][n];
+      
+      int d = pq.top().first;
 
-  if(case1 >= INF && case2 >= INF){
-    cout << -1 << '\n';
+      int y = pq.top().second.first;
+      int x = pq.top().second.second;
+
+      pq.pop();
+
+      if(dist[y][x] < d) continue;
+
+
+    
+
+      for(int k = 0 ; k<4; ++k){
+
+        int ny = y+dy[k];
+        int nx = x+dx[k];
+
+        if(1<=ny && ny <= n && 1<=nx && nx <= m ){
+          
+          int weight = maze[ny][nx];
+          if(weight + d < dist[ny][nx]){
+            pq.push({weight+d,{ny,nx}});
+            dist[ny][nx] = weight + d;
+          }
+          
+        }
+        
+      }
+
+
+    }
+
+    cout << dist[n][m] << '\n';
+
     return 0;
   }
-
-  if(case1 > case2){
-    cout << case2 << '\n';
-  }
-  else{
-    cout << case1 << '\n';
-  }
-
-
-
-  return 0;
-}
