@@ -18,12 +18,29 @@
 
   const int INF = 1e9;
 
-  int maze[126][126];
-  int dist[126][126];
+  struct Edge{
+    int u,v;
+    double dist;
+    bool operator<(const Edge& other) const {
+      return dist < other.dist;
+    }
+  };
 
-  int dx[4] = {1,0,-1,0};
-  int dy[4] = {0,1,0,-1};
+  int parent[1001];
 
+  int find_parent(int x){
+    if(parent[x] == x) return x;
+    return parent[x] = find_parent(parent[x]);
+  }
+
+  void union_parent(int a , int b){
+    a = find_parent(a);
+    b = find_parent(b);
+    if(a<b) parent[b] = a;
+    else parent[a] = b;
+  }
+
+  // void union_p
 
   int main(){
 
@@ -32,80 +49,57 @@
 
 
     
-    //4485
+    //1774
     //9370
     
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
+    //1. 좌표들을 서로 이어서 간선을 만들고 그 간선과 정점들 사이에서 mst를 만들면 된다.
 
-    //1 (0,0)에서 (n-1,n-1) 까지 이동한다.
-    //잃는 금액을 최소로 한다는건 최단 경로를 의미한다.
-    //데이크스트라 알고리즘을 사용하여 풀면 될것같다.
+    //2. M^2 log M 1000000 * 10  천만 
+    // 가능하다.
 
-    //2. O(ElogV) (125*4) * log125 2^7 = 128 약 6.~~ 
-    //한번 하는데 500 * 6.~~  약 3000
+    int n,m;
 
-    int n;
-    int count = 1;
+    cin >> n >> m;
 
-    while(1){
-      cin >> n;
-      if(n == 0 ) break;
+    vector<pair<long long, long long>> coord(n+1);
 
-      //좌표 입력받고
-      for(int i = 0 ; i < n ; ++i){
-        for(int j = 0 ; j < n ; ++j){
-          cin >> maze[i][j];
-          dist[i][j] = INF;
-        }
-      }
-
-      //{가중치 , {(x,y)}} 로 받아서 우선순위큐에 넘겨줘야한다.
-      priority_queue<pair<int, pii>, vector<pair<int , pii>>, greater<pair<int,pii>>> pq;
-
-      pq.push({maze[0][0], {0,0}});
-
-      dist[0][0] = maze[0][0];
-
-      while(!pq.empty()){
-        int d = pq.top().first;
-
-        int y = pq.top().second.first;
-        int x = pq.top().second.second;
-
-        pq.pop();
-
-        
-        if(y == n-1 && x == n-1) break;
-        if(dist[y][x] < d) continue;
-
-        for(int i = 0 ; i < 4 ; ++i){
-          int ny = y + dy[i];
-          int nx = x + dx[i];
-
-          if(0<= ny && ny < n && 0<= nx && nx < n){
-            //좌표 값은 맞다.
-
-            if(dist[ny][nx] > d + maze[ny][nx]){
-              //최단 경로인가?
-              
-              dist[ny][nx] = d + maze[ny][nx];
-              pq.push({dist[ny][nx] , {ny,nx}});
-            }
-          }
-        }
-
-
-        
-
-      }
-
-      printf("Problem %d: %d\n",count,dist[n-1][n-1]);
-      
-      count++;
+    for(int i = 1;  i<=n ; ++i){
+      cin >> coord[i].first >> coord[i].second;
+      parent[i] = i;
     }
 
+    for(int i = 0 ; i < m ;++i){
+      int u,v;
+      cin >> u >> v;
+      union_parent(u,v);
+    }
 
+    vector<Edge> edges;
+    for(int i = 1 ; i <= n; ++i){
+      for(int j = i+1 ; j <= n; ++j){
+        long long dx = coord[i].first - coord[j].first;
+        long long dy = coord[i].second - coord[j].second;
 
+        double d = sqrt(dx*dx + dy*dy);
+        edges.push_back({i,j,d});
+      }
+    }
+
+    sort(edges.begin(), edges.end());
+
+    double result = 0;
+
+    for(int i = 0 ; i < edges.size(); ++i){
+      if(find_parent(edges[i].u) != find_parent(edges[i].v)){
+        union_parent(edges[i].u , edges[i].v);
+        result += edges[i].dist;
+      }
+    }
+
+    cout << fixed << setprecision(2) << result << '\n';
+
+    
     return 0;
   }
