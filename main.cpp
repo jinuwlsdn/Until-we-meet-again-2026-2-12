@@ -8,6 +8,7 @@
   #include <cmath>
   #include <map>
   #include <iomanip> 
+  #include <stack>
 
 
   using namespace std;
@@ -18,29 +19,20 @@
 
   const int INF = 1e9;
 
-  struct Edge{
-    int u,v;
-    double dist;
-    bool operator<(const Edge& other) const {
-      return dist < other.dist;
+  bool prime[1100001];
+
+  void sieve(){
+    for(int i = 2 ; i <= 1100000; ++i){
+      prime[i] = true;
     }
-  };
-
-  int parent[1001];
-
-  int find_parent(int x){
-    if(parent[x] == x) return x;
-    return parent[x] = find_parent(parent[x]);
+    for(int i = 2 ; i * i <= 1100000; ++i){
+      if(prime[i]){
+        for(int j = i * i ; j<=1100000; j+=i){
+          prime[j] = false;
+        }
+      }
+    }
   }
-
-  void union_parent(int a , int b){
-    a = find_parent(a);
-    b = find_parent(b);
-    if(a<b) parent[b] = a;
-    else parent[a] = b;
-  }
-
-  // void union_p
 
   int main(){
 
@@ -49,57 +41,55 @@
 
 
     
-    //1774
+    //1747
     //9370
     
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    //1. 좌표들을 서로 이어서 간선을 만들고 그 간선과 정점들 사이에서 mst를 만들면 된다.
+    // n 부터 백만까지 탐색하는데 소수이면 팰린드롬인지 아닌지 판단하고
+    //팰린드롬이면 출력
 
-    //2. M^2 log M 1000000 * 10  천만 
-    // 가능하다.
+    int n;
+    cin >> n;
 
-    int n,m;
+    sieve();
 
-    cin >> n >> m;
+    for(int i = n ; i<=1100000; ++i){
+      
+      if(prime[i]){
+        string str = to_string(i);
 
-    vector<pair<long long, long long>> coord(n+1);
+        //79197
+        //1빼고 79만 보면된다
+        //01234
+        //324423
+        //012345
+        stack<int> s;
+        
+        int len = str.size();
 
-    for(int i = 1;  i<=n ; ++i){
-      cin >> coord[i].first >> coord[i].second;
-      parent[i] = i;
-    }
+        //절반만 넣기
+        for(int k = 0 ; k < len/2; ++k){
+          s.push(str[k]);
+        }
+        int start = (len % 2  == 0) ? len /2 : len / 2 + 1;
+        
+        bool ispalin = true;
 
-    for(int i = 0 ; i < m ;++i){
-      int u,v;
-      cin >> u >> v;
-      union_parent(u,v);
-    }
+        for(int k = start; k<len; ++k){
+          if(str[k] != s.top()){
+            ispalin = false;
+            break;
+          }
+          s.pop();
+        }
 
-    vector<Edge> edges;
-    for(int i = 1 ; i <= n; ++i){
-      for(int j = i+1 ; j <= n; ++j){
-        long long dx = coord[i].first - coord[j].first;
-        long long dy = coord[i].second - coord[j].second;
-
-        double d = sqrt(dx*dx + dy*dy);
-        edges.push_back({i,j,d});
+        if(ispalin && s.empty()){
+          cout << i << '\n';
+          break;
+        }
       }
     }
-
-    sort(edges.begin(), edges.end());
-
-    double result = 0;
-
-    for(int i = 0 ; i < edges.size(); ++i){
-      if(find_parent(edges[i].u) != find_parent(edges[i].v)){
-        union_parent(edges[i].u , edges[i].v);
-        result += edges[i].dist;
-      }
-    }
-
-    cout << fixed << setprecision(2) << result << '\n';
-
     
     return 0;
   }
