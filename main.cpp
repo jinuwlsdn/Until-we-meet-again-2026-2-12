@@ -8,7 +8,6 @@
   #include <cmath>
   #include <map>
   #include <iomanip> 
-  #include <stack>
 
 
   using namespace std;
@@ -19,20 +18,12 @@
 
   const int INF = 1e9;
 
-  bool prime[1100001];
+  int maze[1001][1001];
+  int dp[1001][1001];
 
-  void sieve(){
-    for(int i = 2 ; i <= 1100000; ++i){
-      prime[i] = true;
-    }
-    for(int i = 2 ; i * i <= 1100000; ++i){
-      if(prime[i]){
-        for(int j = i * i ; j<=1100000; j+=i){
-          prime[j] = false;
-        }
-      }
-    }
-  }
+  int dx[3] = {-1,0,-1};
+  int dy[3] = {0,-1,-1};
+  
 
   int main(){
 
@@ -41,55 +32,51 @@
 
 
     
-    //1747
+    //11048
     //9370
     
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    // n 부터 백만까지 탐색하는데 소수이면 팰린드롬인지 아닌지 판단하고
-    //팰린드롬이면 출력
 
-    int n;
-    cin >> n;
+    //1 dp로 최댓값을 각 배열마다 수정하면 된다.
+    //(r,c) 에서 갈 수 있는건 r+1,c / r,c+1 / r+1, c+1
+    //그러면 (x,y) 3가지의 경우를 조사해서 가장 최댓값을 찾으면 된다.
+    //어차피 더해주는 maze[y][x]
+    int n,m;
 
-    sieve();
+    cin >> n >> m;
 
-    for(int i = n ; i<=1100000; ++i){
-      
-      if(prime[i]){
-        string str = to_string(i);
+    for(int i = 1 ; i <=n ; ++i){
+      for(int j = 1 ; j<=m ; ++j){
+        cin >> maze[i][j];
+        dp[i][j] = maze[i][j];
+      }
+    }
+    dp[1][1] = maze[1][1];
 
-        //79197
-        //1빼고 79만 보면된다
-        //01234
-        //324423
-        //012345
-        stack<int> s;
+
+    for(int i = 1 ; i <=n ; ++i){
+      for(int j = 1 ; j<=m ; ++j){
         
-        int len = str.size();
+        for(int k = 0 ; k < 3 ; ++k){
+          int nx = j + dx[k];
+          int ny = i + dy[k];
 
-        //절반만 넣기
-        for(int k = 0 ; k < len/2; ++k){
-          s.push(str[k]);
-        }
-        int start = (len % 2  == 0) ? len /2 : len / 2 + 1;
-        
-        bool ispalin = true;
-
-        for(int k = start; k<len; ++k){
-          if(str[k] != s.top()){
-            ispalin = false;
-            break;
+          if(1<=ny && ny <= n && 1<=nx && nx <=m){
+            dp[i][j] = max(dp[i][j], dp[ny][nx] + maze[i][j]);
           }
-          s.pop();
-        }
-
-        if(ispalin && s.empty()){
-          cout << i << '\n';
-          break;
         }
       }
     }
+
+
+
+
+
+
+
+    cout << dp[n][m] << '\n';
+    
     
     return 0;
   }
