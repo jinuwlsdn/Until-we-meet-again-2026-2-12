@@ -18,12 +18,8 @@
 
   const int INF = 1e9;
 
-  int maze[1001][1001];
-  int dp[1001][1001];
+  int dp[1001];
 
-  int dx[3] = {-1,0,-1};
-  int dy[3] = {0,-1,-1};
-  
 
   int main(){
 
@@ -32,50 +28,44 @@
 
 
     
-    //11048
+    //1965
     //9370
     
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
+    int n;
+    cin >> n;
+    vector<int> v(n);
 
-    //1 dp로 최댓값을 각 배열마다 수정하면 된다.
-    //(r,c) 에서 갈 수 있는건 r+1,c / r,c+1 / r+1, c+1
-    //그러면 (x,y) 3가지의 경우를 조사해서 가장 최댓값을 찾으면 된다.
-    //어차피 더해주는 maze[y][x]
-    int n,m;
-
-    cin >> n >> m;
-
-    for(int i = 1 ; i <=n ; ++i){
-      for(int j = 1 ; j<=m ; ++j){
-        cin >> maze[i][j];
-        dp[i][j] = maze[i][j];
-      }
+    for(int i = 0 ; i < n ; ++i){
+      cin >> v[i];
+      dp[i] = 1;
     }
-    dp[1][1] = maze[1][1];
 
+    //dp[n]에 들어갈 수 있는건
+    //n보다 작은 수 i
+    //dp[i]들을 보면서 가장 큰 놈에다가 + 1 한 값을
+    //dp[n]에 넣는다.
 
-    for(int i = 1 ; i <=n ; ++i){
-      for(int j = 1 ; j<=m ; ++j){
-        
-        for(int k = 0 ; k < 3 ; ++k){
-          int nx = j + dx[k];
-          int ny = i + dy[k];
+    //1000 * 1000 해도 시간 제한을 넘지 않는다.
+    //상자의 크기는 1,000을 넘지 않는 자연수이다.
+    //-> 최댓값이 int의 범위를 넘지않는다.
 
-          if(1<=ny && ny <= n && 1<=nx && nx <=m){
-            dp[i][j] = max(dp[i][j], dp[ny][nx] + maze[i][j]);
-          }
+    int max_value = 1;
+    
+    for(int i = 0 ; i<n; ++i){
+      dp[i] = 1;
+      for(int j = 0 ; j<i; ++j){
+        if(v[j] < v[i]){
+          dp[i] = max(dp[i], dp[j] + 1);
         }
       }
+      max_value = max(max_value, dp[i]);
     }
 
 
+    cout << max_value << '\n';
 
-
-
-
-
-    cout << dp[n][m] << '\n';
     
     
     return 0;
