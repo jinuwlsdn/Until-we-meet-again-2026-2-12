@@ -18,8 +18,7 @@
 
   const int INF = 1e9;
 
-  int dp[1001];
-
+  int graph[101][101];
 
   int main(){
 
@@ -28,45 +27,51 @@
 
 
     
-    //1965
-    //9370
+    //11404
+    
     
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    int n;
-    cin >> n;
-    vector<int> v(n);
 
-    for(int i = 0 ; i < n ; ++i){
-      cin >> v[i];
-      dp[i] = 1;
+    int n,m;
+    cin >> n >> m;
+
+    //n+1개 줄에 n+1개의 칸을 만드는데 그 칸을 INF로 초기화
+    vector<vector<int>> graph(n+1, vector<int>(n+1, INF));
+    
+    for(int i = 1 ; i <= n; ++i){
+      graph[i][i] = 0;
     }
 
-    //dp[n]에 들어갈 수 있는건
-    //n보다 작은 수 i
-    //dp[i]들을 보면서 가장 큰 놈에다가 + 1 한 값을
-    //dp[n]에 넣는다.
+    for(int i = 0 ; i < m ; ++i){
+      int a,b,c;
 
-    //1000 * 1000 해도 시간 제한을 넘지 않는다.
-    //상자의 크기는 1,000을 넘지 않는 자연수이다.
-    //-> 최댓값이 int의 범위를 넘지않는다.
+      cin >> a >> b >> c;
+      graph[a][b] = min(graph[a][b], c);
+    }
 
-    int max_value = 1;
-    
-    for(int i = 0 ; i<n; ++i){
-      dp[i] = 1;
-      for(int j = 0 ; j<i; ++j){
-        if(v[j] < v[i]){
-          dp[i] = max(dp[i], dp[j] + 1);
+    for(int k = 1 ; k <= n ; ++k){
+      for(int i = 1;  i<=n ; ++i){
+        for(int j = 1 ; j<=n ; ++j){
+          if(graph[i][k] != INF && graph[k][j] != INF){
+            graph[i][j] = min(graph[i][j], graph[i][k] + graph[k][j]);
+          }
         }
       }
-      max_value = max(max_value, dp[i]);
     }
 
+    for(int i = 1; i <=n ; ++i){
+      for(int j = 1 ; j <=n ; ++j){
+        if(i == j && graph[i][j] >= INF){
+          cout << 0 << " ";
+        }
+        else{
+          cout << graph[i][j] << " ";
+        }
 
-    cout << max_value << '\n';
-
-    
+      }
+      cout << '\n';
+    }
     
     return 0;
   }
