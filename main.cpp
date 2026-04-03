@@ -34,58 +34,45 @@
     
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
+    //1 플로이드 알고리즘을 쓰는데 이 때 본인을 0이 아닌 INF로 설정해서 graph i i 값도
+    //만들어야한다. graph[i][i]가 0이면 어떤값을 넣어도 갱신이 될 수 없다.
+    //자기 자신으로 돌아와야 사이클을 만들 수 있고 최솟값 갱신이 되어야 답을 구할 수 있다.
 
-    int n,m,r;
+    //플로이드 알고리즘을 사용할 경우 시간 복잡도는 O(N^3) 400의 3제곱
+    // 64 000 000
 
-    cin >> n >> m >> r;
+    //3 2차원배열의 vector를 사용, 출력값의 최댓값 400 * 10000 ?
 
-    for(int i= 1 ; i<=n ;++i){
-      for(int j =1 ; j <=n ; ++j){
-        if(i==j) graph[i][j] = 0;
-        else graph[i][j] =INF;
-      }
+    int v,e;
+    cin >> v >> e;
+
+    vector<vector<int>> graph(v+1, vector<int>(v+1,INF));
+
+    for(int i = 0 ;  i < e ; ++i){
+      int a,b,c;
+      cin >> a >> b >> c;
+
+      //a->b
+      graph[a][b] = c;
     }
 
-    for(int i = 1 ; i <=n ;++i){
-      cin >> item[i]; 
-    }
-
-    for(int i = 0; i < r ; ++i){
-      int a,b,l;
-      cin >> a >> b >> l;
-
-      graph[a][b] =l;
-      graph[b][a] =l;
-      
-    }
-
-    //처음 스타트 어디?
-
-    for(int k =1 ; k<=n ;++k){
-      for(int i =1 ; i<=n ;++i){
-        for(int j =1 ; j<=n ;++j){
-          if(graph[i][j] > graph[i][k] + graph[k][j]){
-            graph[i][j] = graph[i][k] + graph[k][j];
-          }
+    int min_cycle =INF;
+    for(int k =1 ; k <=v ;++k){
+      for(int i =1 ; i<=v; ++i){
+        for(int j = 1; j <=v ; ++j){
+          graph[i][j] = min(graph[i][j], graph[i][k] + graph[k][j]);
         }
+        
       }
     }
-    int max_sum =0;
-    for(int i = 1; i <= n ;++i){
-      int sum = 0;
-      for(int j = 1;  j<=n ; ++j){
-        if(graph[i][j] <= m){
-          //수색 범위 안에있음
-          sum += item[j];
-        }
-      }
-      max_sum = max(max_sum , sum);
+
+    for(int i = 1; i<=v ; ++i){
+      min_cycle = min(min_cycle, graph[i][i]);
     }
 
-    cout << max_sum << '\n';
-    
+    if(min_cycle == INF) cout << -1 << '\n';
+    else cout << min_cycle << '\n';
 
-  
 
     return 0;
   }
