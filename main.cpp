@@ -18,7 +18,9 @@
 
   const int INF = 1e9;
 
-
+  int item[101];
+  int graph[101][101];
+  bool visited[101];
 
   int main(){
 
@@ -27,55 +29,61 @@
 
 
     
-    //11403
+    //14938
     
     
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    //플로이드 알고리즘을 사용하는데 k를 거쳐간다고 했을때
-    //g[i][k] 가 1이고 g[k][j]가 1이면 i->j로 가는 길이 있으니까 g[i][j]을 1로 바꾼다
-    //이렇게 1로 바꾸면 길이 계속 생기니까 나중에 길을 완성할 때도 도움이 된다.
 
-    int n;
-    cin >> n;
+    int n,m,r;
 
-    vector<vector<int>> v(n+1, vector<int>(n+1, 0));
+    cin >> n >> m >> r;
 
-    //정수 값으로 줬다.
-    for(int i = 1; i<=n ;++i){
-      for(int j = 1;  j<=n ;++j){
-        cin >> v[i][j];
+    for(int i= 1 ; i<=n ;++i){
+      for(int j =1 ; j <=n ; ++j){
+        if(i==j) graph[i][j] = 0;
+        else graph[i][j] =INF;
       }
     }
 
-    for(int k =1 ; k <=n ;++k){
-      for(int i = 1;  i<=n ;++i){
-        for(int j = 1; j <=n ; ++j){
-          if(v[i][j]) continue;
-          if(v[i][k] == 1 && v[k][j] == 1){
-            v[i][j] = 1;
+    for(int i = 1 ; i <=n ;++i){
+      cin >> item[i]; 
+    }
+
+    for(int i = 0; i < r ; ++i){
+      int a,b,l;
+      cin >> a >> b >> l;
+
+      graph[a][b] =l;
+      graph[b][a] =l;
+      
+    }
+
+    //처음 스타트 어디?
+
+    for(int k =1 ; k<=n ;++k){
+      for(int i =1 ; i<=n ;++i){
+        for(int j =1 ; j<=n ;++j){
+          if(graph[i][j] > graph[i][k] + graph[k][j]){
+            graph[i][j] = graph[i][k] + graph[k][j];
           }
         }
       }
-
-      cout << k << "단계"  << '\n';
-      for(int i = 1 ; i <= n ;++i){
-        for(int j =1 ; j <=n ;++j){
-          cout << v[i][j] << " ";
-        }
-      cout << '\n';
-      }
     }
-    // for(int k =1 ; k <=n ;++k){
-    //   for(int i = 1; i <=n ; ++i){
-    //     if(v[i][k] == 1 && v[k][i] == 1){
-    //       v[i][i] = 1;
-    //     }
-    //   }    
-    // }
-      
-    
+    int max_sum =0;
+    for(int i = 1; i <= n ;++i){
+      int sum = 0;
+      for(int j = 1;  j<=n ; ++j){
+        if(graph[i][j] <= m){
+          //수색 범위 안에있음
+          sum += item[j];
+        }
+      }
+      max_sum = max(max_sum , sum);
+    }
 
+    cout << max_sum << '\n';
+    
 
   
 

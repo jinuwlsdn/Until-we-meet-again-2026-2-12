@@ -18,8 +18,9 @@
 
   const int INF = 1e9;
 
-  int dp[1001];
-
+  int item[101];
+  int graph[101][101];
+  bool visited[101];
 
   int main(){
 
@@ -28,46 +29,56 @@
 
 
     
-    //1965
-    //9370
+    //14938
+    
     
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    int n;
-    cin >> n;
-    vector<int> v(n);
 
-    for(int i = 0 ; i < n ; ++i){
-      cin >> v[i];
-      dp[i] = 1;
+    int n,m,r;
+
+
+    for(int i = 1 ; i <=n ;++i){
+      cin >> item[i]; 
     }
 
-    //dp[n]에 들어갈 수 있는건
-    //n보다 작은 수 i
-    //dp[i]들을 보면서 가장 큰 놈에다가 + 1 한 값을
-    //dp[n]에 넣는다.
+    for(int i = 0; i < r ; ++i){
+      int a,b,l;
+      cin >> a >> b >> l;
 
-    //1000 * 1000 해도 시간 제한을 넘지 않는다.
+      graph[a][b] =l;
+      graph[b][a] =l;
+      
+    }
 
-    int max_value = 0;
-    dp[0] = 1;
-    for(int i = 1 ; i<n; ++i){
-      int max_size = dp[i];
-      int size = v[i];
-      for(int j = 0 ; j<i; ++j){
-        if(v[j] < size){
-          max_size = max(max_size, dp[j]);
+    //처음 스타트 어디?
+
+    for(int k =1 ; k<=n ;++k){
+      for(int i =1 ; i<=n ;++i){
+        for(int j =1 ; j<=n ;++j){
+          if(graph[i][j] > graph[i][k] + graph[k][j]){
+            graph[i][j] = graph[i][k] + graph[k][j];
+          }
+        }
+      }
+    }
+    int max_sum =0;
+    for(int i = 1; i <= n ;++i){
+      int sum = 0;
+      for(int j = 1;  j<=n ; ++j){
+        if(graph[i][j] <= m){
+          //수색 범위 안에있음
+          sum += item[j];
         }
       }
 
-      dp[i] = max_size + 1;
-      max_value = max(max_value, dp[i]);
+      max_sum = max(max_sum , sum);
     }
 
-
-    cout << max_value << '\n';
-
+    cout << max_sum << '\n';
     
-    
+
+  
+
     return 0;
   }
