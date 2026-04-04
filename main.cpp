@@ -8,6 +8,10 @@
   #include <cmath>
   #include <map>
   #include <iomanip> 
+  //The reason why I miss you lies in your smile
+
+
+
 
 
   using namespace std;
@@ -28,66 +32,70 @@
      
 
     
-    //2458
+    //2660
 
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
+
+    //각 회원의 점수를 정할 때 주의할 점
+    //어떤 두 회원이 친구사이이면서 동시에 친구의 친구사이이면, 이 두사람은 친구사이라고 본다.
+    //-> 최단경로로 계산한다
+
     
-    //1.본인한테 간선이 들어오거나 간선이 다른 정점을 향해 뻗어야 하는데 그 간선들의 수를 세보았을 때
-    // n-1값이면 정확하게 본인의 위치를 알 수 있다.
+    int n;
+    cin >> n;
 
-    //이 문제가 왜 플로이드 알고리즘 -> m의 값이 n(n-1)/2로 주어진다는건 단방향 그래프라는 것이고
-    //그래프를 통해서 각각의 정점들이 문제의 조건에 해당하는 정점인지 확인해야한다.
-    //도달 가능 여부를 체크하기 위해
+    vector<vector<int>> f(n+1, vector<int>(n+1, INF));
 
-
-    //The reason why I miss you lies in your smile
-
-    int n,m;
-    cin >> n >> m;
-
-    vector<vector<int>> students(n+1, vector<int>(n+1,INF));
-
-    for(int i = 1; i <= n ; ++i){
-      students[i][i] = 0;
+    for(int i = 1; i<=n; ++i){
+      f[i][i] = 0;
     }
 
-    for(int i = 0 ; i < m ; ++i){
+    while(1){
       int a,b;
       cin >> a >> b;
-      
-      students[a][b] = 1;
+      if(a==-1 && b == -1) break;
 
+      f[a][b] = 1;
+      f[b][a] = 1;
     }
 
-
-    //플로이드 알고리즘
-    for(int k = 1; k <= n ; ++k){
-      for(int i = 1 ; i<=n ; ++i){
-        for(int j=1 ; j<=n; ++j){
-          students[i][j] = min(students[i][j], students[i][k] + students[k][j]);
+    for(int k =1 ;  k <=n ; ++k){
+      for(int i =1 ; i<=n ;++i){
+        for(int j =1 ; j <=n ; ++j){
+          f[i][j] = min(f[i][j] , f[i][k]+ f[k][j]);
         }
       }
     }
     
 
-    int total = 0;
-    for(int i = 1; i <=n ; ++i){
-      int count  =0;
 
-      for(int j =1 ; j <=n ; ++j){
-        if(i == j ) continue;
-        if(students[i][j] < INF || students[j][i] < INF){
-          // i->j 갈 수 있거나 j->i 쪽으로 들어 오거나
-          //존재한다면
-          count++;
-        }
+    int min_score = INF;
+    int person = 0;
+
+    vector<int> values(n+1, 0);
+
+    for(int i =1 ;  i <=n ; ++i){
+      int score =0;
+      for(int j =1 ;  j<=n ;++j){
+        score = max(score, f[i][j]);
       }
-
-      if(count == n-1) total++;
+      values[i] = score;
+      min_score = min(min_score, values[i]);
     }
 
+    vector<int> v;
+    for(int i = 1; i <=n ; ++i){
+      if(values[i] == min_score){
+        v.push_back(i);
+        person++;
+      } 
+    }
 
-    cout << total << '\n';
+    cout << min_score << " " << person << '\n';
+    for(int item : v){
+      cout << item << " ";
+    }
+   
     
    
     return 0;
