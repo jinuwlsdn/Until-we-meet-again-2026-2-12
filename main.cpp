@@ -8,9 +8,6 @@
   #include <cmath>
   #include <map>
   #include <iomanip> 
-  //The reason why I miss you lies in your smile
-
-
 
 
 
@@ -21,75 +18,40 @@
   typedef pair<int, int> pii;
 
   const int INF = 1e9;
+ 
   int n,m;
-  int dx[4] = {1,0,-1,0};
-  int dy[4] = {0,1,0,-1};
-  int max_safe = 0;
-  
-  int graph[9][9];
 
-  void bfs(){
-    int temp_graph[9][9];
-    queue<pair<int, int>> q;
+  int min_total_dist = INF;
+  vector<pair<int,int>> house, chicken, selected;
 
-    for(int i = 0; i < n ; ++i){
-      for(int j = 0 ; j < m ; ++j){
-        temp_graph[i][j] = graph[i][j];
-        if(temp_graph[i][j] == 2) q.push({i,j});
+  void get_dist(){
+    int total_dist =0;
+    for(auto& h : house){
+      int dist =INF;
+
+      for(auto& c : selected){
+        dist = min(dist, abs(h.first - c.first) + abs(h.second - c.second));
       }
+      total_dist += dist;
     }
-
-
-    while(!q.empty()){
-      int y = q.front().first;
-      int x = q.front().second;
-
-      q.pop();
-
-      for(int i = 0 ; i < 4 ; ++i){
-        int ny = y+dy[i];
-        int nx = x+dx[i];
-
-        if(0<=ny && ny < n && 0<= nx && nx< m){
-          if(temp_graph[ny][nx] == 0){
-            temp_graph[ny][nx] = 2;
-            q.push({ny,nx});
-          }
-        }
-      }
-    }
-
-    int current_safe = 0;
-    for(int i = 0 ; i < n ; ++i){
-      for(int j = 0 ; j < m ; ++j){
-        if(temp_graph[i][j] == 0) current_safe++;
-      }
-    }
-    max_safe = max(max_safe, current_safe);
+    min_total_dist = min(min_total_dist , total_dist);
   }
 
-  void recurse(int y , int x, int count){
+  void recurse(int start_idx, int count){
+    if(count == m){
+      //거리계산
+      get_dist();
 
-    if(count == 3){
-      bfs();
       return;
-    } 
+    }
 
-    for(int i = 0 ; i<n; ++i){
-      for(int j = 0 ; j<m; ++j){
-        if(graph[i][j] == 0){
-          //빈칸이다
-          graph[i][j] = 1;
-          recurse(i,j,count+1);
-          graph[i][j] = 0;
-        }
-      }
+    //전체 치킨집 chicken.size() 중에서 M개를 뽑는다.
+    for(int i = start_idx; i<chicken.size(); ++i){
+      selected.push_back(chicken[i]);
+      recurse(i+1, count+1);
+      selected.pop_back();
     }
   }
-  
-  
-
-  
 
   int main(){
 
@@ -99,30 +61,43 @@
      
 
     
-    //14502
+    //15686
 
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    //벽 3개를 만들고 바이러스가 있다면 퍼지게 하면서 count++한다. bfs로 풀어보자.
-    //min_count를 계산하여 출력하면 된다.
+    //도시에 있는 치킨집 중에서 M개를 선택하고 나머지는 제거한다
+    //이렇게 수많은 경우의수를 만들어보고 치킨 거리를 계산하여 
+    //최솟값을 구하면 될 것 같다.
 
-    //bfs O(V+E); V의 최댓값은 8*8 이고 간선의 최댓값은 8*8*4 벽 3개 둘 수 있는 경우의 수는
-    //64C3 41664 * O(V+E) = 41664 * (64+64*4)  13,332,480
-    //n은 세로 m은 가로
-
-    //삼중for문? 재귀함수? 
     
+
     cin >> n >> m;
 
-    for(int i =0  ; i < n ; ++i){
-      for(int j = 0 ; j<m; ++j){
-        cin >> graph[i][j];
+    for(int i = 0; i <n ; ++i){
+      for(int j =0 ; j <n ; ++j){
+        int temp;
+        cin >> temp;
+        //집의 좌표와 치킨집의 좌표를 넣는다.
+        if(temp == 1) house.push_back({i,j});
+        else if(temp == 2) chicken.push_back({i,j});
       }
     }
 
-    recurse(0,0,0);
-    
-    cout << max_safe << '\n';
+    recurse(0,0);
+
+    cout << min_total_dist << '\n';
     
     return 0;
   }
+
+
+
+
+
+
+
+
+
+
+
+  //The reason why I miss you lies in your smile

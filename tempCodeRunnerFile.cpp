@@ -68,25 +68,24 @@
     max_safe = max(max_safe, current_safe);
   }
 
-  void recurse(int y , int x, int count){
+  void recurse(int count, int start_idx){
 
     if(count == 3){
       bfs();
       return;
     } 
 
-    for(int i = 0 ; i<n; ++i){
-      for(int j = 0 ; j<m; ++j){
-        if(graph[i][j] == 0){
-          //빈칸이다
-          graph[i][j] = 1;
-          recurse(i,j,count+1);
-          graph[i][j] = 0;
-        }
+    for(int i = start_idx ; i<n*m; ++i){
+      int r = i/m;
+      int c = i%m;
+
+      if(graph[r][c] == 0){
+        graph[r][c] = 1;
+        recurse(count+1, i+1);
+        graph[r][c] = 0;
       }
     }
-  }
-  
+  } 
   
 
   
@@ -120,7 +119,7 @@
       }
     }
 
-    recurse(0,0,0);
+    recurse(0,0);
     
     cout << max_safe << '\n';
     
