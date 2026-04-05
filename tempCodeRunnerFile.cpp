@@ -24,19 +24,63 @@
   int n,m;
   int dx[4] = {1,0,-1,0};
   int dy[4] = {0,1,0,-1};
+  int max_safe = 0;
   
-  vector<vector<int>> graph(n+1, vector<int>(n+1, 0));
+  int graph[9][9];
 
-  void recurse(vector<vector<int>> graph ,int x, int y,int count){
+  void bfs(){
+    int temp_graph[9][9];
+    queue<pair<int, int>> q;
 
-    if(count == 3) return;
+    for(int i = 0; i < n ; ++i){
+      for(int j = 0 ; j < m ; ++j){
+        temp_graph[i][j] = graph[i][j];
+        if(temp_graph[i][j] == 2) q.push({i,j});
+      }
+    }
+
+
+    while(!q.empty()){
+      int y = q.front().first;
+      int x = q.front().second;
+
+      q.pop();
+
+      for(int i = 0 ; i < 4 ; ++i){
+        int ny = y+dy[i];
+        int nx = x+dx[i];
+
+        if(0<=ny && ny < n && 0<= nx && nx< m){
+          if(temp_graph[ny][nx] == 0){
+            temp_graph[ny][nx] = 2;
+            q.push({ny,nx});
+          }
+        }
+      }
+    }
+
+    int current_safe = 0;
+    for(int i = 0 ; i < n ; ++i){
+      for(int j = 0 ; j < m ; ++j){
+        if(temp_graph[i][j] == 0) current_safe++;
+      }
+    }
+    max_safe = max(max_safe, current_safe);
+  }
+
+  void recurse(int y , int x, int count){
+
+    if(count == 3){
+      bfs();
+      return;
+    } 
 
     for(int i = 0 ; i<n; ++i){
-      for(int j = 0 ; j<n; ++j){
+      for(int j = 0 ; j<m; ++j){
         if(graph[i][j] == 0){
           //빈칸이다
           graph[i][j] = 1;
-          recurse(graph, i,j, count+1);
+          recurse(i,j,count+1);
           graph[i][j] = 0;
         }
       }
@@ -70,66 +114,15 @@
     
     cin >> n >> m;
 
-    
-
-    int safe_zone =0;
-    queue<pair<int, int>> new_q;
-    for(int i = 0 ; i <n ; ++i){
-      for(int j = 0 ; j < m ;++j){
+    for(int i =0  ; i < n ; ++i){
+      for(int j = 0 ; j<m; ++j){
         cin >> graph[i][j];
-        if(graph[i][j] == 2){
-          new_q.push({i,j});
-        }
-        if(graph[i][j] == 0) safe_zone++;
       }
     }
 
-    int max_safezone =0;
-    for(int i = 0 ; i <n ; ++i){
-      for(int j = 0 ; j < m ;++j){
-        
-        vector<vector<bool>> visited(n+1, vector<bool>(n+1, false));
-
-        //recurse로 반환될 수 있는 경우의 수는 매우 많다.
-        //한번만 되는 것이 아닌가?
-        recurse(graph, i,j,0);
-        queue<pair<int,int>> q = new_q;
-
-        int count_virus = 0;
-        while(!q.empty()){
-          int y = q.front().first;
-          int x = q.front().second;
-
-          q.pop();
-
-          visited[y][x] = true;
-
-          for(int i = 0 ; i < 4 ; ++i){
-            int nx = x+dx[i];
-            int ny = y+dy[i];
-
-            if(0<=nx && nx < m && 0<=ny && ny<n){
-              if(!visited[ny][nx] && graph[ny][nx] == 0){
-                visited[ny][nx] = true;
-                graph[ny][nx] = 2;
-                count_virus++;
-                q.push({ny,nx});
-              }
-            }
-          }
-
-        }
-
-        int total_safezone = safe_zone - count_virus;
-        max_safezone = max(max_safezone, total_safezone);
-
-        
-
-
-      }
-    }
-
-
+    recurse(0,0,0);
+    
+    cout << max_safe << '\n';
     
     return 0;
   }

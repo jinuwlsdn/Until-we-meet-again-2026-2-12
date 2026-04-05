@@ -76,7 +76,7 @@
     } 
 
     for(int i = 0 ; i<n; ++i){
-      for(int j = 0 ; j<n; ++j){
+      for(int j = 0 ; j<m; ++j){
         if(graph[i][j] == 0){
           //빈칸이다
           graph[i][j] = 1;
