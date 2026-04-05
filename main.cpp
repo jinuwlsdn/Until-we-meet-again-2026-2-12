@@ -21,6 +21,73 @@
   typedef pair<int, int> pii;
 
   const int INF = 1e9;
+  int n,m;
+  int dx[4] = {1,0,-1,0};
+  int dy[4] = {0,1,0,-1};
+  int max_safe = 0;
+  
+  int graph[9][9];
+
+  void bfs(){
+    int temp_graph[9][9];
+    queue<pair<int, int>> q;
+
+    for(int i = 0; i < n ; ++i){
+      for(int j = 0 ; j < m ; ++j){
+        temp_graph[i][j] = graph[i][j];
+        if(temp_graph[i][j] == 2) q.push({i,j});
+      }
+    }
+
+
+    while(!q.empty()){
+      int y = q.front().first;
+      int x = q.front().second;
+
+      q.pop();
+
+      for(int i = 0 ; i < 4 ; ++i){
+        int ny = y+dy[i];
+        int nx = x+dx[i];
+
+        if(0<=ny && ny < n && 0<= nx && nx< m){
+          if(temp_graph[ny][nx] == 0){
+            temp_graph[ny][nx] = 2;
+            q.push({ny,nx});
+          }
+        }
+      }
+    }
+
+    int current_safe = 0;
+    for(int i = 0 ; i < n ; ++i){
+      for(int j = 0 ; j < m ; ++j){
+        if(temp_graph[i][j] == 0) current_safe++;
+      }
+    }
+    max_safe = max(max_safe, current_safe);
+  }
+
+  void recurse(int y , int x, int count){
+
+    if(count == 3){
+      bfs();
+      return;
+    } 
+
+    for(int i = 0 ; i<n; ++i){
+      for(int j = 0 ; j<n; ++j){
+        if(graph[i][j] == 0){
+          //빈칸이다
+          graph[i][j] = 1;
+          recurse(i,j,count+1);
+          graph[i][j] = 0;
+        }
+      }
+    }
+  }
+  
+  
 
   
 
@@ -32,71 +99,30 @@
      
 
     
-    //2660
+    //14502
 
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    //각 회원의 점수를 정할 때 주의할 점
-    //어떤 두 회원이 친구사이이면서 동시에 친구의 친구사이이면, 이 두사람은 친구사이라고 본다.
-    //-> 최단경로로 계산한다
+    //벽 3개를 만들고 바이러스가 있다면 퍼지게 하면서 count++한다. bfs로 풀어보자.
+    //min_count를 계산하여 출력하면 된다.
 
+    //bfs O(V+E); V의 최댓값은 8*8 이고 간선의 최댓값은 8*8*4 벽 3개 둘 수 있는 경우의 수는
+    //64C3 41664 * O(V+E) = 41664 * (64+64*4)  13,332,480
+    //n은 세로 m은 가로
+
+    //삼중for문? 재귀함수? 
     
-    int n;
-    cin >> n;
+    cin >> n >> m;
 
-    vector<vector<int>> f(n+1, vector<int>(n+1, INF));
-
-    for(int i = 1; i<=n; ++i){
-      f[i][i] = 0;
-    }
-
-    while(1){
-      int a,b;
-      cin >> a >> b;
-      if(a==-1 && b == -1) break;
-
-      f[a][b] = 1;
-      f[b][a] = 1;
-    }
-
-    for(int k =1 ;  k <=n ; ++k){
-      for(int i =1 ; i<=n ;++i){
-        for(int j =1 ; j <=n ; ++j){
-          f[i][j] = min(f[i][j] , f[i][k]+ f[k][j]);
-        }
+    for(int i =0  ; i < n ; ++i){
+      for(int j = 0 ; j<m; ++j){
+        cin >> graph[i][j];
       }
     }
+
+    recurse(0,0,0);
     
-
-
-    int min_score = INF;
-    int person = 0;
-
-    vector<int> values(n+1, 0);
-
-    for(int i =1 ;  i <=n ; ++i){
-      int score =0;
-      for(int j =1 ;  j<=n ;++j){
-        score = max(score, f[i][j]);
-      }
-      values[i] = score;
-      min_score = min(min_score, values[i]);
-    }
-
-    vector<int> v;
-    for(int i = 1; i <=n ; ++i){
-      if(values[i] == min_score){
-        v.push_back(i);
-        person++;
-      } 
-    }
-
-    cout << min_score << " " << person << '\n';
-    for(int item : v){
-      cout << item << " ";
-    }
-   
+    cout << max_safe << '\n';
     
-   
     return 0;
   }
