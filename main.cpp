@@ -18,87 +18,9 @@
   typedef pair<int, int> pii;
 
   const int INF = 1e9;
-  
-  int graph[51][51];
-  int dist[51][51];
-  int n,m;
-  vector<pair<int,int>> virus,selected;
-  
- 
-  
-  int dx[4] = {1,0,-1,0};
-  int dy[4] = {0,1,0,-1};
+
 
   
-  int min_sec = INF;
-  void bfs(){
-   
-    //-1 방문 X
-    memset(dist, -1, sizeof(dist));
-    queue<pair<int,int>> q;
-
-    for(auto& p : selected){
-      q.push(p);
-      dist[p.first][p.second] = 0;
-      //0은 방문했다.
-    }
-
-    int max_time =0;
-
-    while(!q.empty()){
-      int y = q.front().first;
-      int x = q.front().second;
-      q.pop();
-
-      for(int i = 0 ; i < 4 ; ++i){
-        int ny = y + dy[i];
-        int nx = x + dx[i];
-
-        if(0<=ny && ny < n && 0<=nx && nx < n){
-          if(graph[ny][nx] != 1 && dist[ny][nx] == -1){
-            dist[ny][nx] = dist[y][x] + 1;
-            q.push({ny,nx});
-          }
-        }
-      }
-    }
-    bool judge = true;
-    for(int i = 0 ; i<n; ++i){
-      for(int j = 0 ; j<n; ++j){
-        max_time = max(max_time, dist[i][j]);
-        //방문할 수 있는 공간인데 방문을 하지 않았으면
-        if(graph[i][j] == 0 && dist[i][j] == -1) judge =false;
-      }
-    }
-    
-    if(!judge) return;
-    else{
-      min_sec = min(min_sec, max_time);
-      return;
-    }
-
-    
-
-  }
-  void recurse(int start_idx, int count){
-
-
-    if(count == m){
-      bfs();
-      return;
-    }
-
-    //바이러스를 조합공식을 사용해서 넣는다.
-    //큐를 만들어서 m개의 좌표를 넣는다.
-    for(int i = start_idx; i<virus.size(); ++i){
-      selected.push_back(virus[i]);
-      recurse(i+1, count+1);
-      selected.pop_back();
-    }
-    
-  }
-
-
   int main(){
 
     ios::sync_with_stdio(false);
@@ -107,37 +29,70 @@
 
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    //17141
-  
-    //1. graph를 입력받고 백트래킹을 통해서 바이러스를 배치한다.
-    //그 다음 bfs를 통해서 바이러스를 퍼뜨리고 최소시간을 구하면 된다.
+    //1002
 
-   
-    cin >> n >> m;
+    //1. 좌표평면에서 그려보면서 파악하고있다
 
-    for(int i = 0 ; i < n ; ++i){
-      for(int j = 0 ;  j < n; ++j){
-        cin >> graph[i][j];
-        if(graph[i][j] == 2){
-           virus.push_back({i,j});
-           graph[i][j] = 0;
-        }
+    int t;
+    cin >> t;
+
+    while(t--){
+      int x1,y1,r1,x2,y2,r2;
+
+      cin >> x1 >> y1 >> r1 >> x2 >> y2 >> r2;
+      
+      if(x1 == x2 && y1 == y2){
+        if(r1==r2) cout << -1 << '\n';
+        else cout << 0 << '\n';
+        continue;
       }
+
+      //계산
+
+      //예제입력에서 경우의 수를 다 주었다.
+      //두 원이 있다고 가정했을 때 
+      //두 원의 중점 사이의 거리 d와 반지름 r1,r2를 비교하여 출력값을 조정하면 될 것 같다.
+
+      double dist = sqrt(pow(x1-x2, 2) + pow(y1-y2,2));
+
+      if(dist > r1+r2 || dist+r1<r2 || dist+r2 < r1) cout << 0 << '\n';
+      else if(dist == r1+r2 || r2 == dist + r1 || r1 == dist + r2) cout << 1 << '\n';
+      else if(dist < r1+r2) cout << 2 << '\n';
+      
+
+      
+      //거리가 반지름의 합보다 클 때 혹은 원 안에 원이 있다는 가정, 두 원의 중점 사이의 거리 d와
+      //작은 원의 반지름을 더 한 것이 큰 원의 반지름보다 작으면 교점이 없다
+      //거리와 반지름의 합이 같거나, 원 안에 원이 있고 d와 작은 원의 반지름의 합이 큰 원의 반지름과
+      //같다면 교점이 1개이다 
+      //두원의 반지름 합이 d보다 크다면 교점이 2개다 원 안에 원이 있을 때도 원 밖에 원이 있을 때도
     }
 
+    
 
-    recurse(0,0);
-
-    if(min_sec == INF) cout << -1 << '\n';
-    else cout << min_sec << '\n';
-
-
-
-
+    
 
   }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 
   //The reason why I miss you lies in your smile
