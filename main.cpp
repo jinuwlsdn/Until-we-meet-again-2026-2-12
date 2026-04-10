@@ -8,7 +8,7 @@
   #include <cmath>
   #include <map>
   #include <iomanip> 
-
+  #include <deque>
 
 
   using namespace std;
@@ -29,47 +29,47 @@
 
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    //1002
+    //24511
 
-    //1. 좌표평면에서 그려보면서 파악하고있다
+    //1 스택이면 arr[i] 값을 이전 값으로 바꾸고
+    //큐면 arr[i] 값을 냅둔다 <- x
+    //덱을 사용해서 이해 해보자
+    // 0 1 1 0
+    // 1 2 3 4
+    // 이 상황에서 2 3은 필요가 없다 어차피 들어오고 pop되면 그 전에 넘겨받았던 수니까
+    //그렇게 되면 큐를 잘 봐야한다. 한 사이클을 돌았을 때 나가는 수는 마지막 큐에 있던 수다 
+    //처음으로 4가 나가게 되고 그 다음 1 또 다음은 처음으로 들어온 수 2
 
-    int t;
-    cin >> t;
+   
+    int n;
+    cin >> n;
 
-    while(t--){
-      int x1,y1,r1,x2,y2,r2;
+    vector<int> qs(n);
+    for(int i = 0 ; i < n ; ++i) cin >> qs[i];
 
-      cin >> x1 >> y1 >> r1 >> x2 >> y2 >> r2;
-      
-      if(x1 == x2 && y1 == y2){
-        if(r1==r2) cout << -1 << '\n';
-        else cout << 0 << '\n';
-        continue;
-      }
+    deque<int> dq;
 
-      //계산
+    for(int i = 0 ; i <n ; ++i){
+      int x;
+      cin >> x;
 
-      //예제입력에서 경우의 수를 다 주었다.
-      //두 원이 있다고 가정했을 때 
-      //두 원의 중점 사이의 거리 d와 반지름 r1,r2를 비교하여 출력값을 조정하면 될 것 같다.
-
-      double dist = sqrt(pow(x1-x2, 2) + pow(y1-y2,2));
-
-      if(dist > r1+r2 || dist+r1<r2 || dist+r2 < r1) cout << 0 << '\n';
-      else if(dist == r1+r2 || r2 == dist + r1 || r1 == dist + r2) cout << 1 << '\n';
-      else if(dist < r1+r2) cout << 2 << '\n';
-      
-
-      
-      //거리가 반지름의 합보다 클 때 혹은 원 안에 원이 있다는 가정, 두 원의 중점 사이의 거리 d와
-      //작은 원의 반지름을 더 한 것이 큰 원의 반지름보다 작으면 교점이 없다
-      //거리와 반지름의 합이 같거나, 원 안에 원이 있고 d와 작은 원의 반지름의 합이 큰 원의 반지름과
-      //같다면 교점이 1개이다 
-      //두원의 반지름 합이 d보다 크다면 교점이 2개다 원 안에 원이 있을 때도 원 밖에 원이 있을 때도
+      //qs가 0 이면 큐니까 가져온다
+      if(qs[i] == 0) dq.push_back(x);
     }
 
-    
+    //1과 4가 들어와있는 상태
 
+    int m;
+    cin >> m;
+
+    while(m--){
+      int value;
+      cin >> value;
+
+      dq.push_front(value);
+      cout << dq.back() << " ";
+      dq.pop_back();
+    }
     
 
   }
