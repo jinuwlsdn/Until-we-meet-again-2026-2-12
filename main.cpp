@@ -21,6 +21,8 @@
 
   
 
+  int dx[4] = {1,0,-1,0};
+  int dy[4] = {0,1,0,-1};
   
   int main(){
 
@@ -30,61 +32,115 @@
 
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    //2565
+    //16234
 
-    //1 A전봇대 B전봇대를 구분해보자 A전봇대 요소를 i , j(i보다 큰 정수)
-    //i>j는 무조건 보장된다. (전봇대에서 보았을 때) 
-    //그렇다면 a전봇대와 연결되어있는 b전봇대 요소를 b[i]라고 했을 때
-    //만약 b[i] > b[j]라면 이 전깃줄은 절대 만나지 않는다. (i,j) 
-    //따라서 b에서 i>j가 보장되어 있으므로 가장 긴 증가하는 수열을 찾아서 풀어주면 된다. 
+    //1. L명이상 R명이하 
+    //O(V+E) 50*50 + 50*50*4 
+    //인구이동 발생하는 일수가 2000번보다 작다.
+    //5*50*50 12500 * 2000    25 000 000.
 
-    //4 입력이 1,2,3,4 차례대로가 아니라 1,4,2,3 꼬아서 주어질 수 있다.
-    
+    int n,l,r;
+    cin >> n >> l >> r;
 
-    int n;
-    cin >> n;
-    vector<pair<int,int>> wires(n);
-
-    for(int i = 0 ; i<n; ++i){
-      cin >> wires[i].first >> wires[i].second;
+    if(n==1){
+      cout << 0 << '\n';
+      return 0;
     }
 
-    //sort는 기본적으로 오름차순
-    sort(wires.begin(), wires.end());
+    vector<vector<int>> country(n+1, vector<int>(n+1, 0));
 
-    vector<int> dp(n,1);
+    for(int i= 0; i  <n ; ++i){
+      for(int j = 0 ; j<n; ++j){
+         cin >> country[i][j];
+      }
+    }
+
+    //사이클마다 bfs탐색을하고 만족하는 나라는 좌표값을 넣어둔다. 인구수도 sum += 해준다.
+    //sum/count를 한 다음 나온 값을 만족하는 나라에 저장한다. 
     
-    int max_value =0;
-    for(int i = 0;  i<n; ++i){
 
-      for(int j = 0 ; j<i ; ++j){
-        if(wires[j].second < wires[i].second){
-          dp[i] = max(dp[i], dp[j]+1);
+    
+    int day_count = 0;
+    while(1){
+      bool check = false;
+      
+      vector<vector<bool>> visited(n+1, vector<bool>(n+1, false));
+      queue<pair<int , int>> q;
+
+      
+
+
+      
+      //횟수는 2500보다 밑이다.
+      for(int i = 0 ; i < n ; ++i){
+        for(int j = 0 ; j < n ; ++j){
+          if(!visited[i][j]){
+            queue<pair<int,int>> q;
+            vector<pair<int,int>> coord;
+
+            q.push({i,j});
+            visited[i][j] = true;
+            coord.push_back({i,j});
+            int sum = country[i][j];
+
+
+            while(!q.empty()){
+              int y = q.front().first;
+              int x = q.front().second;
+
+              q.pop();
+
+
+              for(int d = 0 ; d < 4 ; ++d){
+                int ny = y +dy[d];
+                int nx = x +dx[d];
+
+                if(0<=ny && ny < n && 0<=nx && nx < n){
+                  int diff = abs(country[y][x] - country[ny][nx]);
+
+                  if(l<=diff && diff <= r){
+                    visited[ny][nx] = true;
+                    q.push({ny,nx});
+                    coord.push_back({ny,nx});
+                    sum += country[ny][nx];
+                  }
+                }
+              }
+            }
+
+            //2개이상 묶인 나라가 있다.
+            if(coord.size() > 1){
+              //인구이동을 하였다.
+              check = true;
+              int value = sum / coord.size();
+              for(pair k : coord){
+                country[k.first][k.second] = value;
+              }
+            }
+
+
+          }
+          
         }
       }
-      max_value = max(max_value, dp[i]);
+
+      //check가 false면 인구이동이 한번도 없었다는 뜻이므로 종료한다.
+      //아니면 day_count++한다.
+      if(!check) break; 
+
+      day_count++;
+      
+
+      
+      
     }
-
-
-    //전체 전선의 개수에서 가장 많이 남긴 개수 빼준다
-    //그렇게 되면 우리가 제거해야할 전선의 개수가 나온다. 
-    cout << n-max_value << '\n';
     
 
+    cout << day_count << '\n';
+
+
     return 0;
-
   }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
