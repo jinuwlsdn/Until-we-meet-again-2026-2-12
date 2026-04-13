@@ -8,10 +8,7 @@
   #include <cmath>
   #include <map>
   #include <iomanip> 
-  //The reason why I miss you lies in your smile
-
-
-
+  #include <deque>
 
 
   using namespace std;
@@ -21,107 +18,140 @@
   typedef pair<int, int> pii;
 
   const int INF = 1e9;
-  int n,m;
+
+
+  bool visited[51][51];
+  
+
   int dx[4] = {1,0,-1,0};
   int dy[4] = {0,1,0,-1};
-  int max_safe = 0;
   
-  int graph[9][9];
-
-  void bfs(){
-    int temp_graph[9][9];
-    queue<pair<int, int>> q;
-
-    for(int i = 0; i < n ; ++i){
-      for(int j = 0 ; j < m ; ++j){
-        temp_graph[i][j] = graph[i][j];
-        if(temp_graph[i][j] == 2) q.push({i,j});
-      }
-    }
-
-
-    while(!q.empty()){
-      int y = q.front().first;
-      int x = q.front().second;
-
-      q.pop();
-
-      for(int i = 0 ; i < 4 ; ++i){
-        int ny = y+dy[i];
-        int nx = x+dx[i];
-
-        if(0<=ny && ny < n && 0<= nx && nx< m){
-          if(temp_graph[ny][nx] == 0){
-            temp_graph[ny][nx] = 2;
-            q.push({ny,nx});
-          }
-        }
-      }
-    }
-
-    int current_safe = 0;
-    for(int i = 0 ; i < n ; ++i){
-      for(int j = 0 ; j < m ; ++j){
-        if(temp_graph[i][j] == 0) current_safe++;
-      }
-    }
-    max_safe = max(max_safe, current_safe);
-  }
-
-  void recurse(int count, int start_idx){
-
-    if(count == 3){
-      bfs();
-      return;
-    } 
-
-    for(int i = start_idx ; i<n*m; ++i){
-      int r = i/m;
-      int c = i%m;
-
-      if(graph[r][c] == 0){
-        graph[r][c] = 1;
-        recurse(count+1, i+1);
-        graph[r][c] = 0;
-      }
-    }
-  } 
-  
-
-  
-
   int main(){
 
-    // ios::sync_with_stdio(false);
-    // cin.tie(0);
+    ios::sync_with_stdio(false);
+    cin.tie(0);
 
-     
-
-    
-    //14502
 
     //1 아이디어 2 시간복잡도 3 자료구조 4 유의해야할 점
 
-    //벽 3개를 만들고 바이러스가 있다면 퍼지게 하면서 count++한다. bfs로 풀어보자.
-    //min_count를 계산하여 출력하면 된다.
+    //16234
 
-    //bfs O(V+E); V의 최댓값은 8*8 이고 간선의 최댓값은 8*8*4 벽 3개 둘 수 있는 경우의 수는
-    //64C3 41664 * O(V+E) = 41664 * (64+64*4)  13,332,480
-    //n은 세로 m은 가로
+    //1. L명이상 R명이하 
+    //O(V+E) 50*50 + 50*50*4 
+    //인구이동 발생하는 일수가 2000번보다 작다.
+    //5*50*50 12500 * 2000    25 000 000.
 
-    //삼중for문? 재귀함수? 
-    
-    cin >> n >> m;
+    int n,l,r;
+    cin >> n >> l >> r;
 
-    for(int i =0  ; i < n ; ++i){
-      for(int j = 0 ; j<m; ++j){
-        cin >> graph[i][j];
+    if(n==1){
+      cout << 0 << '\n';
+      return 0;
+    }
+
+    vector<vector<int>> country(n+1, vector<int>(n+1, 0));
+
+    for(int i= 0; i  <n ; ++i){
+      for(int j = 0 ; j<n; ++j){
+         cin >> country[i][j];
       }
     }
 
-    recurse(0,0);
+    //사이클마다 bfs탐색을하고 만족하는 나라는 좌표값을 넣어둔다. 인구수도 sum += 해준다.
+    //sum/count를 한 다음 나온 값을 만족하는 나라에 저장한다. 
     
-    cout << max_safe << '\n';
+
     
+    int day_count = 0;
+    while(1){
+      bool check = false;
+      
+      memset(visited, false, sizeof(visited));
+      queue<pair<int , int>> q;
+
+      
+
+
+      
+      //횟수는 2500보다 밑이다.
+      for(int i = 0 ; i < n ; ++i){
+        for(int j = 0 ; j < n ; ++j){
+          if(!visited[i][j]){
+            queue<pair<int,int>> q;
+            vector<pair<int,int>> coord;
+
+            q.push({i,j});
+            visited[i][j] = true;
+            coord.push_back({i,j});
+            int sum = country[i][j];
+
+
+            while(!q.empty()){
+              int y = q.front().first;
+              int x = q.front().second;
+
+              q.pop();
+
+
+              for(int d = 0 ; d < 4 ; ++d){
+                int ny = y +dy[d];
+                int nx = x +dx[d];
+
+                if(0<=ny && ny < n && 0<=nx && nx < n){
+                  int diff = abs(country[y][x] - country[ny][nx]);
+
+                  if(l<=diff && diff <= r){
+                    visited[ny][nx] = true;
+                    q.push({ny,nx});
+                    coord.push_back({ny,nx});
+                    sum += country[ny][nx];
+                  }
+                }
+              }
+            }
+
+            //2개이상 묶인 나라가 있다.
+            if(coord.size() > 1){
+              //인구이동을 하였다.
+              check = true;
+              int value = sum / coord.size();
+              for(pair k : coord){
+                country[k.first][k.second] = value;
+              }
+            }
+
+
+          }
+          
+        }
+      }
+
+      //check가 false면 인구이동이 한번도 없었다는 뜻이므로 종료한다.
+      //아니면 day_count++한다.
+      if(!check) break; 
+
+      day_count++;
+      
+
+      
+      
+    }
+    
+
+    cout << day_count << '\n';
+
+
     return 0;
   }
+
+
+
+
+
+
+
+
+
+  
+
+  //The reason why I miss you lies in your smile

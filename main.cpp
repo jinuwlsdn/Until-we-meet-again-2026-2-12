@@ -19,6 +19,8 @@
 
   const int INF = 1e9;
 
+
+  bool visited[51][51];
   
 
   int dx[4] = {1,0,-1,0};
@@ -64,7 +66,7 @@
     while(1){
       bool check = false;
       
-      vector<vector<bool>> visited(n+1, vector<bool>(n+1, false));
+      memset(visited, false, sizeof(visited));
       queue<pair<int , int>> q;
 
       
@@ -98,7 +100,7 @@
                 if(0<=ny && ny < n && 0<=nx && nx < n){
                   int diff = abs(country[y][x] - country[ny][nx]);
 
-                  if(l<=diff && diff <= r){
+                  if(l<=diff && diff <= r && !visited[ny][nx]){
                     visited[ny][nx] = true;
                     q.push({ny,nx});
                     coord.push_back({ny,nx});
