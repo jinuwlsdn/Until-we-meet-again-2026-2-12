@@ -23,16 +23,28 @@
 
     //1715
 
-    //4714
+    //2490
 
-    while(1){
-      double k;
-      cin >> k;
-      if(k<0) break;
+    for(int i = 0 ; i<3 ; ++i){
+      
+      int one = 0;
+      int zero = 0;
+      for(int k = 0 ; k<4; ++k){
+        int num ;
+        cin >> num;
 
-      printf("Objects weighing %.2lf on Earth will weigh %.2lf on the moon.\n", k, k*0.167);
-     
+        if(num == 1) one++;
+        else zero++;
+      }
+
+      if(zero == 4) cout << 'D' << '\n';
+      else if(zero == 1) cout << 'A' << '\n';
+      else if(zero == 2) cout << 'B' << '\n';
+      else if(zero ==  3) cout << 'C' << '\n';
+      else if(zero == 0) cout << 'E' << '\n'; 
     }
+    
+
 
 
     return 0;
